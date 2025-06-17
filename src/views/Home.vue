@@ -33,22 +33,50 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import SearchBar from '@/components/SearchBar.vue'
 import ResourceList from '@/components/ResourceList.vue'
 import { useResourceStore } from '@/stores/resource'
+import { getSearchFromQuery } from '@/utils/url'
 
+const route = useRoute()
 const resourceStore = useResourceStore()
+
+// 处理搜索逻辑的函数
+const handleUrlSearch = async (searchParam) => {
+  const searchTerm = getSearchFromQuery({ search: searchParam })
+
+  if (searchTerm) {
+    // 如果URL中有搜索参数，执行搜索
+    const searchData = {
+      searchTerm,
+      page: 0,
+      size: 10
+    }
+    await resourceStore.searchResources(searchData)
+  } else {
+    // 如果没有搜索参数，获取默认资源列表
+    await resourceStore.fetchResources()
+  }
+}
 
 onMounted(async () => {
   // 初始化时获取资源类型
   await resourceStore.fetchResourceTypes()
-  
-  // 如果没有搜索条件，获取默认资源列表
-  if (!resourceStore.searchTerm) {
-    await resourceStore.fetchResources()
-  }
+
+  // 处理初始URL搜索参数
+  await handleUrlSearch(route.query.search)
 })
+
+// 监听路由查询参数变化
+watch(
+  () => route.query.search,
+  async (newSearch) => {
+    // 当URL中的搜索参数变化时，自动执行搜索
+    await handleUrlSearch(newSearch)
+  }
+)
 </script>
 
 <style scoped>

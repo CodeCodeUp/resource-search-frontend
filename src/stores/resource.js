@@ -78,6 +78,7 @@ export const useResourceStore = defineStore('resource', () => {
     searchTerm.value = ''
     selectedType.value = ''
     currentPage.value = 1
+    total.value = 0
     fetchResources()
   }
 

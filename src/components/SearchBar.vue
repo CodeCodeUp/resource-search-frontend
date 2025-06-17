@@ -66,22 +66,49 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
+import { getSearchFromQuery, buildSearchQuery } from '@/utils/url'
 
+const route = useRoute()
+const router = useRouter()
 const resourceStore = useResourceStore()
-const { resourceTypes, searchLoading } = storeToRefs(resourceStore)
+const { resourceTypes, searchLoading, searchTerm } = storeToRefs(resourceStore)
 
 const searchForm = reactive({
   searchTerm: '',
   selectedType: ''
 })
 
+// 初始化时从URL参数设置搜索词
+onMounted(() => {
+  const searchTerm = getSearchFromQuery(route.query)
+  if (searchTerm) {
+    searchForm.searchTerm = searchTerm
+  }
+})
+
+// 监听store中的searchTerm变化，同步到表单
+watch(searchTerm, (newTerm) => {
+  if (newTerm !== searchForm.searchTerm) {
+    searchForm.searchTerm = newTerm
+  }
+})
+
 const handleSearch = () => {
   const term = searchForm.searchTerm.trim()
+
+  // 构建新的查询参数
+  const newQuery = buildSearchQuery(route.query, term)
+
+  // 更新URL
+  router.push({ query: newQuery })
+
   if (!term) {
+    // 清空搜索时，获取默认资源列表
     resourceStore.fetchResources()
     return
   }
@@ -98,6 +125,8 @@ const handleSearch = () => {
 const handleReset = () => {
   searchForm.searchTerm = ''
   searchForm.selectedType = ''
+  // 清空URL参数
+  router.push({ query: {} })
   resourceStore.resetSearch()
 }
 </script>
