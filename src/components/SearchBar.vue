@@ -34,7 +34,7 @@
               v-for="type in resourceTypes"
               :key="type.id"
               :label="type.name"
-              :value="type.id"
+              :value="type.menu"
             />
           </el-select>
           

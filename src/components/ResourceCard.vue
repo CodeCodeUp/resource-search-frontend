@@ -77,22 +77,29 @@ const defaultImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9
 const getResourceType = (typeValue) => {
   if (!typeValue) return '未知类型'
 
-  // 如果是字符串，直接返回（如 "study"）
-  if (typeof typeValue === 'string') {
-    // 可以根据需要映射为中文
-    const typeMap = {
-      'study': '学习资料',
-      'tool': '工具软件',
-      'design': '设计资源',
-      'programming': '编程教程',
-      'office': '办公软件'
+  // 从API获取的resourceTypes菜单中根据resource.type匹配menu字段，返回对应的name
+  if (resourceTypes.value && resourceTypes.value.length > 0) {
+    // 根据resource.type查找对应的菜单项（匹配menu字段）
+    const menuItem = resourceTypes.value.find(menu => menu.menu === typeValue)
+
+    if (menuItem) {
+      return menuItem.name
     }
-    return typeMap[typeValue] || typeValue
   }
 
-  // 如果是数字ID，从resourceTypes中查找
-  const type = resourceTypes.value.find(t => t.id === typeValue)
-  return type?.name || '未知类型'
+  // 如果在菜单中没有找到，使用本地映射作为后备
+  const typeMap = {
+    'study': '学习',
+    'movie': '影视',
+    'anime': '动漫',
+    'comic': '漫画',
+    'game': '游戏',
+    'shortdrama': '短剧',
+    'novel': '小说',
+    'wallpaper': '壁纸'
+  }
+
+  return typeMap[typeValue] || typeValue || '未知类型'
 }
 
 const handleImageError = (event) => {

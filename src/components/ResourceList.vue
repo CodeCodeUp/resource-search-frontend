@@ -42,7 +42,7 @@
     </div>
 
     <!-- 分页 -->
-    <div v-if="hasResources && totalPages > 1" class="pagination-container">
+    <div v-if="hasResources && totalPages > 0" class="pagination-container">
       <el-pagination
         v-model:current-page="currentPage"
         :page-size="pageSize"
@@ -81,7 +81,7 @@ const handleSizeChange = (newSize) => {
   if (searchTerm.value) {
     resourceStore.searchResources({
       searchTerm: searchTerm.value,
-      page: 1,
+      page: 0,
       size: newSize
     })
   } else {

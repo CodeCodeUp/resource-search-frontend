@@ -1,10 +1,13 @@
 // 模拟数据，用于开发和演示
 export const mockResourceTypes = [
-  { id: 1, name: '编程教程', parentId: null },
-  { id: 2, name: '设计资源', parentId: null },
-  { id: 3, name: '办公软件', parentId: null },
-  { id: 4, name: '学习资料', parentId: null },
-  { id: 5, name: '工具软件', parentId: null }
+  { id: 1, menu: 'study', name: '学习', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 2, menu: 'movie', name: '影视', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 3, menu: 'anime', name: '动漫', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 4, menu: 'comic', name: '漫画', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 5, menu: 'game', name: '游戏', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 6, menu: 'shortdrama', name: '短剧', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 7, menu: 'novel', name: '小说', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null },
+  { id: 8, menu: 'wallpaper', name: '壁纸', level: 1, createTime: '2025-06-17 06:36:53', updateTime: '2025-06-17 06:36:53', children: null }
 ]
 
 export const mockResources = [
@@ -15,84 +18,84 @@ export const mockResources = [
     url: 'https://vuejs.org',
     pig: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
     level: 1,
-    type: 'programming',
-    createTime: '2025-06-17 06:40:55',
-    updateTime: '2025-06-17 06:40:55'
-  },
-  {
-    id: 2,
-    name: 'React 开发指南',
-    content: '深入学习React框架，掌握组件化开发、Hooks使用、性能优化等高级技巧。包含大量实战项目。',
-    url: 'https://reactjs.org',
-    pig: 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=400&h=300&fit=crop',
-    level: 1,
-    type: 'programming',
-    createTime: '2025-06-17 06:40:55',
-    updateTime: '2025-06-17 06:40:55'
-  },
-  {
-    id: 3,
-    name: 'UI设计素材包',
-    content: '精美的UI设计素材集合，包含图标、按钮、卡片等常用组件。支持Sketch、Figma等主流设计工具。',
-    url: 'https://example.com/ui-kit',
-    pig: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop',
-    level: 1,
-    type: 'design',
-    createTime: '2025-06-17 06:40:55',
-    updateTime: '2025-06-17 06:40:55'
-  },
-  {
-    id: 4,
-    name: 'Photoshop 高级教程',
-    content: '专业的Photoshop教程，涵盖图像处理、特效制作、合成技巧等高级功能。适合设计师和摄影师。',
-    url: 'https://example.com/ps-tutorial',
-    pig: 'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=400&h=300&fit=crop',
-    level: 1,
-    type: 'design',
-    createTime: '2025-06-17 06:40:55',
-    updateTime: '2025-06-17 06:40:55'
-  },
-  {
-    id: 5,
-    name: 'Excel 数据分析',
-    content: 'Excel数据分析完整教程，包含数据透视表、图表制作、函数应用、宏编程等实用技能。',
-    url: 'https://example.com/excel-tutorial',
-    pig: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
-    level: 1,
-    type: 'office',
-    createTime: '2025-06-17 06:40:55',
-    updateTime: '2025-06-17 06:40:55'
-  },
-  {
-    id: 6,
-    name: 'Python 编程入门',
-    content: 'Python编程语言入门教程，从基础语法到实际项目开发，包含爬虫、数据分析、Web开发等应用。',
-    url: 'https://python.org',
-    pig: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=300&fit=crop',
-    level: 1,
-    type: 'programming',
-    createTime: '2025-06-17 06:40:55',
-    updateTime: '2025-06-17 06:40:55'
-  },
-  {
-    id: 7,
-    name: '计算机网络原理',
-    content: '深入理解计算机网络原理，包含TCP/IP协议、网络安全、路由算法等核心知识点。',
-    url: 'https://example.com/network',
-    pig: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
-    level: 1,
     type: 'study',
     createTime: '2025-06-17 06:40:55',
     updateTime: '2025-06-17 06:40:55'
   },
   {
-    id: 8,
-    name: 'VSCode 插件开发',
-    content: '学习如何开发VSCode插件，提升开发效率。包含插件架构、API使用、发布流程等内容。',
-    url: 'https://code.visualstudio.com',
-    pig: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop',
+    id: 2,
+    name: '复仇者联盟4：终局之战',
+    content: '漫威超级英雄电影的史诗级终章，复仇者们为了拯救宇宙而展开最后的决战。',
+    url: 'https://example.com/avengers',
+    pig: 'https://images.unsplash.com/photo-1489599735734-79b4169c2a78?w=400&h=300&fit=crop',
     level: 1,
-    type: 'tool',
+    type: 'movie',
+    createTime: '2025-06-17 06:40:55',
+    updateTime: '2025-06-17 06:40:55'
+  },
+  {
+    id: 3,
+    name: '进击的巨人',
+    content: '人类与巨人之间的生存战争，充满悬疑和反转的经典动漫作品。',
+    url: 'https://example.com/aot',
+    pig: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
+    level: 1,
+    type: 'anime',
+    createTime: '2025-06-17 06:40:55',
+    updateTime: '2025-06-17 06:40:55'
+  },
+  {
+    id: 4,
+    name: '海贼王',
+    content: '路飞和他的伙伴们在大海上寻找传说中的宝藏ONE PIECE的冒险故事。',
+    url: 'https://example.com/onepiece',
+    pig: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=400&h=300&fit=crop',
+    level: 1,
+    type: 'comic',
+    createTime: '2025-06-17 06:40:55',
+    updateTime: '2025-06-17 06:40:55'
+  },
+  {
+    id: 5,
+    name: '原神',
+    content: '开放世界冒险游戏，在提瓦特大陆上展开奇幻的冒险旅程。',
+    url: 'https://genshin.hoyoverse.com',
+    pig: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop',
+    level: 1,
+    type: 'game',
+    createTime: '2025-06-17 06:40:55',
+    updateTime: '2025-06-17 06:40:55'
+  },
+  {
+    id: 6,
+    name: '霸道总裁爱上我',
+    content: '现代都市爱情短剧，讲述普通女孩与霸道总裁的浪漫爱情故事。',
+    url: 'https://example.com/drama',
+    pig: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&h=300&fit=crop',
+    level: 1,
+    type: 'shortdrama',
+    createTime: '2025-06-17 06:40:55',
+    updateTime: '2025-06-17 06:40:55'
+  },
+  {
+    id: 7,
+    name: '斗破苍穹',
+    content: '玄幻小说经典之作，讲述少年萧炎从废材到强者的逆袭之路。',
+    url: 'https://example.com/doupo',
+    pig: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop',
+    level: 1,
+    type: 'novel',
+    createTime: '2025-06-17 06:40:55',
+    updateTime: '2025-06-17 06:40:55'
+  },
+  {
+    id: 8,
+    name: '4K风景壁纸合集',
+    content: '精美的4K高清风景壁纸，包含山川、海洋、森林等自然美景。',
+    url: 'https://example.com/wallpaper',
+    pig: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+    level: 1,
+    type: 'wallpaper',
     createTime: '2025-06-17 06:40:55',
     updateTime: '2025-06-17 06:40:55'
   }
