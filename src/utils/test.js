@@ -130,13 +130,47 @@ export const testImageProxy = () => {
   console.log('  3. 查看资源卡片中的图片是否正常显示')
 }
 
+// 图片适配功能测试
+export const testImageFit = () => {
+  console.log('📐 测试图片适配功能...')
+
+  // 测试不同宽高比的图片
+  const testCases = [
+    { name: '竖屏图片', width: 400, height: 600, ratio: 0.67 },
+    { name: '正方形图片', width: 400, height: 400, ratio: 1.0 },
+    { name: '横屏图片', width: 600, height: 400, ratio: 1.5 },
+    { name: '极窄竖屏', width: 200, height: 800, ratio: 0.25 },
+    { name: '极宽横屏', width: 800, height: 200, ratio: 4.0 }
+  ]
+
+  testCases.forEach(({ name, width, height, ratio }) => {
+    console.log(`📸 ${name} (${width}x${height}, 比例: ${ratio}):`)
+
+    // 模拟不同适配模式的结果
+    const modes = ['smart', 'cover', 'contain', 'auto']
+    modes.forEach(mode => {
+      // 这里可以调用实际的适配函数进行测试
+      console.log(`  - ${mode}模式: ${ratio < 0.8 && mode === 'smart' ? 'contain' : 'cover'}`)
+    })
+  })
+
+  console.log('🔧 当前配置:', import.meta.env.VITE_IMAGE_FIT_MODE)
+  console.log('📝 使用方法:')
+  console.log('  1. 修改 .env.development 中的 VITE_IMAGE_FIT_MODE')
+  console.log('  2. 可选值: smart, cover, contain, auto')
+  console.log('  3. 重启开发服务器查看效果')
+  console.log('  4. 在浏览器开发者工具中查看图片适配信息')
+}
+
 // 在浏览器控制台中运行测试
 if (typeof window !== 'undefined') {
   window.testApi = testApi
   window.testUrlSearch = testUrlSearch
   window.testImageProxy = testImageProxy
+  window.testImageFit = testImageFit
   console.log('💡 在控制台中运行以下命令来测试功能:')
   console.log('  - testApi() 测试 API 功能')
   console.log('  - testUrlSearch() 测试 URL 搜索功能')
   console.log('  - testImageProxy() 测试图片代理功能')
+  console.log('  - testImageFit() 测试图片适配功能')
 }

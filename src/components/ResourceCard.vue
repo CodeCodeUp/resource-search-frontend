@@ -2,10 +2,16 @@
   <div class="resource-card" @click="handleCardClick">
     <div class="card-image">
       <img
+        ref="imageRef"
         :src="processedImageUrl"
         :alt="resource.name"
         @error="handleImageError"
-        :class="{ 'image-loading': imageLoading }"
+        @load="handleImageLoad"
+        :class="{
+          'image-loading': imageLoading,
+          'portrait-image': isPortraitImage,
+          'auto-fit': useAutoFit
+        }"
       />
       <div class="card-overlay">
         <el-button type="primary" circle>
@@ -63,6 +69,7 @@ import { View, Download } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
 import { processImageUrl, generateDefaultImage } from '@/utils/image'
+import { getImageFitMode, getImageInfo, imageConfig } from '@/config/image'
 
 const props = defineProps({
   resource: {
@@ -77,6 +84,9 @@ const { resourceTypes } = storeToRefs(resourceStore)
 // 图片加载状态
 const imageLoading = ref(false)
 const processedImageUrl = ref('')
+const imageRef = ref(null)
+const isPortraitImage = ref(false)
+const useAutoFit = ref(false)
 
 // 默认图片
 const defaultImage = generateDefaultImage('无图片')
@@ -88,6 +98,11 @@ const processImage = () => {
     processedImageUrl.value = defaultImage
     return
   }
+
+  // 开始加载图片
+  imageLoading.value = true
+  isPortraitImage.value = false
+  useAutoFit.value = false
 
   // 使用图片处理工具
   processedImageUrl.value = processImageUrl(originalUrl)
@@ -126,9 +141,34 @@ const getResourceType = (typeValue) => {
   return typeMap[typeValue] || typeValue || '未知类型'
 }
 
+// 图片加载完成处理
+const handleImageLoad = (event) => {
+  const img = event.target
+  const imageInfo = getImageInfo(img)
+  const fitResult = getImageFitMode(imageInfo.aspectRatio)
+
+  // 应用适配结果
+  isPortraitImage.value = fitResult.isPortrait
+  useAutoFit.value = fitResult.isAutoFit
+
+  imageLoading.value = false
+
+  // 开发模式下显示详细信息
+  if (imageConfig.showFitInfo) {
+    console.log(`图片适配信息:`, {
+      尺寸: `${imageInfo.width}x${imageInfo.height}`,
+      宽高比: imageInfo.aspectRatio.toFixed(2),
+      方向: imageInfo.orientation,
+      适配模式: fitResult.info,
+      objectFit: fitResult.objectFit
+    })
+  }
+}
+
 const handleImageError = (event) => {
   console.warn('图片加载失败:', processedImageUrl.value)
   event.target.src = generateDefaultImage('加载失败')
+  imageLoading.value = false
 }
 
 const handleCardClick = () => {
@@ -175,7 +215,20 @@ const handleDownload = () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.3s ease;
+}
+
+/* 适配竖屏图片 - 当图片比例过高时使用contain模式 */
+.card-image img.portrait-image {
+  object-fit: contain;
+  background-color: #f5f5f5;
+}
+
+/* 智能适配 - 根据图片宽高比自动调整 */
+.card-image img.auto-fit {
+  object-fit: contain;
+  background-color: #f8f9fa;
 }
 
 .resource-card:hover .card-image img {
