@@ -97,11 +97,46 @@ export const testUrlSearch = () => {
   console.log('  4. 在搜索框中输入新的搜索词，URL会自动更新')
 }
 
+// 图片代理功能测试
+export const testImageProxy = () => {
+  console.log('🖼️ 测试图片代理功能...')
+
+  // 测试图片URL
+  const testImages = [
+    'https://example.com/image1.jpg',
+    'https://cdn.example.com/image2.png',
+    'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop'
+  ]
+
+  testImages.forEach((url, index) => {
+    console.log(`📸 测试图片 ${index + 1}: ${url}`)
+
+    // 测试不同的代理方式
+    const proxyMethods = [
+      { name: 'imageproxy', url: `https://images.weserv.nl/?url=${encodeURIComponent(url)}` },
+      { name: 'allorigins', url: `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` },
+      { name: 'backend', url: `/proxy-image?url=${encodeURIComponent(url)}` }
+    ]
+
+    proxyMethods.forEach(({ name, url: proxyUrl }) => {
+      console.log(`  - ${name}: ${proxyUrl}`)
+    })
+  })
+
+  console.log('🔧 当前配置:', import.meta.env.VITE_USE_IMAGE_PROXY)
+  console.log('📝 使用方法:')
+  console.log('  1. 修改 .env.development 中的 VITE_USE_IMAGE_PROXY')
+  console.log('  2. 重启开发服务器')
+  console.log('  3. 查看资源卡片中的图片是否正常显示')
+}
+
 // 在浏览器控制台中运行测试
 if (typeof window !== 'undefined') {
   window.testApi = testApi
   window.testUrlSearch = testUrlSearch
+  window.testImageProxy = testImageProxy
   console.log('💡 在控制台中运行以下命令来测试功能:')
   console.log('  - testApi() 测试 API 功能')
   console.log('  - testUrlSearch() 测试 URL 搜索功能')
+  console.log('  - testImageProxy() 测试图片代理功能')
 }

@@ -2,9 +2,10 @@
   <div class="resource-card" @click="handleCardClick">
     <div class="card-image">
       <img
-        :src="resource.pig || resource.pic || defaultImage"
+        :src="processedImageUrl"
         :alt="resource.name"
         @error="handleImageError"
+        :class="{ 'image-loading': imageLoading }"
       />
       <div class="card-overlay">
         <el-button type="primary" circle>
@@ -57,10 +58,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { View, Download } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
+import { processImageUrl, generateDefaultImage } from '@/utils/image'
 
 const props = defineProps({
   resource: {
@@ -72,7 +74,29 @@ const props = defineProps({
 const resourceStore = useResourceStore()
 const { resourceTypes } = storeToRefs(resourceStore)
 
-const defaultImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJsaW5lYXItZ3JhZGllbnQoMTM1ZGVnLCAjNjY3ZWVhIDAlLCAjNzY0YmEyIDEwMCUpIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPuaXoOWbvueJhzwvdGV4dD4KPHN2Zz4K'
+// 图片加载状态
+const imageLoading = ref(false)
+const processedImageUrl = ref('')
+
+// 默认图片
+const defaultImage = generateDefaultImage('无图片')
+
+// 处理图片URL
+const processImage = () => {
+  const originalUrl = props.resource.pig || props.resource.pic
+  if (!originalUrl) {
+    processedImageUrl.value = defaultImage
+    return
+  }
+
+  // 使用图片处理工具
+  processedImageUrl.value = processImageUrl(originalUrl)
+}
+
+// 组件挂载时处理图片
+onMounted(() => {
+  processImage()
+})
 
 const getResourceType = (typeValue) => {
   if (!typeValue) return '未知类型'
@@ -103,7 +127,8 @@ const getResourceType = (typeValue) => {
 }
 
 const handleImageError = (event) => {
-  event.target.src = defaultImage
+  console.warn('图片加载失败:', processedImageUrl.value)
+  event.target.src = generateDefaultImage('加载失败')
 }
 
 const handleCardClick = () => {
@@ -173,6 +198,11 @@ const handleDownload = () => {
 
 .resource-card:hover .card-overlay {
   opacity: 1;
+}
+
+.image-loading {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
 }
 
 .card-content {
