@@ -24,7 +24,7 @@ export const testApi = async () => {
     console.log('🔍 测试搜索功能...')
     const searchResult = await resourceApi.searchResources({
       searchTerm: 'Vue',
-      page: 0,
+      page: 1,
       size: 5
     })
     console.log('✅ 搜索结果:', searchResult)

@@ -115,7 +115,7 @@ const handleSearch = () => {
 
   const searchData = {
     searchTerm: term,
-    page: 0,
+    page: 1,
     size: 10
   }
 

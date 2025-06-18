@@ -81,7 +81,7 @@ const handleSizeChange = (newSize) => {
   if (searchTerm.value) {
     resourceStore.searchResources({
       searchTerm: searchTerm.value,
-      page: 0,
+      page: 1,
       size: newSize
     })
   } else {
@@ -93,7 +93,7 @@ const handleCurrentChange = (newPage) => {
   if (searchTerm.value) {
     resourceStore.searchResources({
       searchTerm: searchTerm.value,
-      page: newPage - 1,
+      page: newPage ,
       size: pageSize.value
     })
   } else {

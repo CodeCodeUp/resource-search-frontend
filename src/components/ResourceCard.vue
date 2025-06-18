@@ -306,9 +306,7 @@ const handleDownload = () => {
 }
 
 @media (max-width: 768px) {
-  .card-image {
-    height: 120px;
-  }
+  
   
   .card-content {
     padding: 16px;
