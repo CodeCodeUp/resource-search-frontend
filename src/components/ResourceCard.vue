@@ -207,7 +207,7 @@ const handleDownload = () => {
 
 .card-image {
   position: relative;
-  height: 180px;
+  max-height: 300px;
   overflow: hidden;
 }
 
@@ -307,7 +307,7 @@ const handleDownload = () => {
 
 @media (max-width: 768px) {
   .card-image {
-    height: 150px;
+    height: 120px;
   }
   
   .card-content {

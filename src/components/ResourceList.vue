@@ -177,7 +177,7 @@ onMounted(() => {
 }
 
 .grid-item {
-  min-height: 350px;
+  min-height: 300px;
 }
 
 .pagination-container {
