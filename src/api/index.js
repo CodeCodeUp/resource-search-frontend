@@ -46,22 +46,12 @@ export const resourceApi = {
     return api.get('/menus/hierarchical')
   },
 
-  // 分页获取资源
-  getResourcesPage(page = 1, size = 10, type) {
-    if (useMock) {
-      return mockApi.getResourcesPage(page, size, type)
-    }
-    return api.get('/resources/page', {
-      params: { page, size, type }
-    })
-  },
-
-  // 搜索资源
+  // 搜索资源（统一接口，支持空搜索词获取所有资源）
   searchResources(searchData) {
     if (useMock) {
       return mockApi.searchResources(searchData)
     }
-    return api.post('/resources/search/page', searchData)
+    return api.post('/resources/search', searchData)
   }
 }
 

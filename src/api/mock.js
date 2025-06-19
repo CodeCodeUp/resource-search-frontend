@@ -111,43 +111,7 @@ export const mockApi = {
     })
   },
 
-  getResourcesPage: (page = 1, size = 10, type = '') => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        let filtered = mockResources
-
-        // 按资源类型过滤
-        if (type) {
-          filtered = filtered.filter(resource => resource.type === type)
-        }
-
-        const start = (page - 1) * size
-        const end = start + size
-        const list = filtered.slice(start, end)
-
-        resolve({
-          total: filtered.length,
-          list,
-          pageNum: page,
-          pageSize: size,
-          size: list.length,
-          startRow: start,
-          endRow: end - 1,
-          pages: Math.ceil(filtered.length / size),
-          prePage: page > 1 ? page - 1 : 0,
-          nextPage: page < Math.ceil(filtered.length / size) ? page + 1 : 0,
-          isFirstPage: page === 1,
-          isLastPage: page === Math.ceil(filtered.length / size),
-          hasPreviousPage: page > 1,
-          hasNextPage: page < Math.ceil(filtered.length / size),
-          navigatePages: 8,
-          navigatepageNums: [page],
-          navigateFirstPage: 1,
-          navigateLastPage: Math.ceil(filtered.length / size)
-        })
-      }, 800)
-    })
-  },
+  // 移除 getResourcesPage，统一使用 searchResources
 
   searchResources: (searchData) => {
     return new Promise((resolve) => {

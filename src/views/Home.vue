@@ -51,13 +51,19 @@ const handleUrlSearch = async (searchParam) => {
     // 如果URL中有搜索参数，执行搜索
     const searchData = {
       searchTerm,
-      page: 1,
+      type: '',
+      page: 1, 
       size: 10
     }
     await resourceStore.searchResources(searchData)
   } else {
     // 如果没有搜索参数，获取默认资源列表
-    await resourceStore.fetchResources()
+    await resourceStore.searchResources({
+      searchTerm: '',
+      type: '',
+      page: 1,
+      size: 10
+    })
   }
 }
 

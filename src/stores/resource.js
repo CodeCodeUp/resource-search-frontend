@@ -34,21 +34,15 @@ export const useResourceStore = defineStore('resource', () => {
     }
   }
 
-  // 获取资源列表
+  // 获取资源列表（统一使用搜索接口）
   const fetchResources = async (page = 1, size = 10, type = '') => {
-    try {
-      loading.value = true
-      const data = await resourceApi.getResourcesPage(page, size, type)
-      resources.value = data.list || data.content || data.records || data.data || []
-      total.value = data.total || data.totalElements || 0
-      currentPage.value = data.pageNum || page
-    } catch (error) {
-      console.error('获取资源列表失败:', error)
-      resources.value = []
-      total.value = 0
-    } finally {
-      loading.value = false
+    const searchData = {
+      searchTerm: '', // 空搜索词表示获取所有资源
+      type: type,
+      page: page - 1, // searchResources 使用 0 基索引
+      size: size
     }
+    await searchResources(searchData)
   }
 
   // 搜索资源
@@ -59,8 +53,11 @@ export const useResourceStore = defineStore('resource', () => {
       resources.value = data.list || data.content || data.records || data.data || []
       total.value = data.total || data.totalElements || 0
       currentPage.value = data.pageNum || (searchData.page + 1)
-      searchTerm.value = searchData.searchTerm
-      selectedType.value = searchData.type || '' // 保存选中的资源类型
+      searchTerm.value = searchData.searchTerm || ''
+      // 保存选中的资源类型，但不覆盖用户的选择
+      if (searchData.type !== undefined) {
+        selectedType.value = searchData.type
+      }
 
       if (resources.value.length === 0) {
         showMessage.info('未找到相关资源，请尝试其他关键词')
@@ -80,7 +77,13 @@ export const useResourceStore = defineStore('resource', () => {
     selectedType.value = ''
     currentPage.value = 1
     total.value = 0
-    fetchResources()
+    // 使用搜索接口获取所有资源
+    searchResources({
+      searchTerm: '',
+      type: '',
+      page: 0,
+      size: pageSize.value
+    })
   }
 
   return {

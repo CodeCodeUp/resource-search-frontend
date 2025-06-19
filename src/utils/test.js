@@ -10,9 +10,14 @@ export const testApi = async () => {
     const types = await resourceApi.getMenusHierarchical()
     console.log('✅ 资源类型:', types)
 
-    // 测试获取资源列表
+    // 测试获取资源列表（使用搜索接口）
     console.log('📄 测试获取资源列表...')
-    const resources = await resourceApi.getResourcesPage(1, 5)
+    const resources = await resourceApi.searchResources({
+      searchTerm: '',
+      type: '',
+      page: 0,
+      size: 5
+    })
     console.log('✅ 资源列表:', resources)
     console.log('📊 数据结构验证:')
     console.log('  - total:', resources.total)
@@ -20,9 +25,14 @@ export const testApi = async () => {
     console.log('  - pageNum:', resources.pageNum)
     console.log('  - 第一条数据:', resources.list?.[0])
 
-    // 测试带类型的资源列表
+    // 测试带类型的资源列表（使用搜索接口）
     console.log('📄 测试带类型的资源列表...')
-    const typeResources = await resourceApi.getResourcesPage(1, 5, 'study')
+    const typeResources = await resourceApi.searchResources({
+      searchTerm: '',
+      type: 'study',
+      page: 0,
+      size: 5
+    })
     console.log('✅ 类型资源列表 (study):', typeResources)
     console.log('📊 类型资源列表验证:')
     console.log('  - total:', typeResources.total)

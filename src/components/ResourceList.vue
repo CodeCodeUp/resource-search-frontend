@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+// 移除 onMounted 导入，不再需要
 import { Search, Close, DocumentRemove } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
@@ -79,40 +79,29 @@ const {
 
 const handleSizeChange = (newSize) => {
   pageSize.value = newSize
-  if (searchTerm.value) {
-    resourceStore.searchResources({
-      searchTerm: searchTerm.value,
-      type: selectedType.value, // 添加资源类型参数
-      page: 1,
-      size: newSize
-    })
-  } else {
-    resourceStore.fetchResources(1, newSize, selectedType.value)
-  }
+  resourceStore.searchResources({
+    searchTerm: searchTerm.value || '',
+    type: selectedType.value || '',
+    page: 0, // 重置到第一页
+    size: newSize
+  })
 }
 
 const handleCurrentChange = (newPage) => {
-  if (searchTerm.value) {
-    resourceStore.searchResources({
-      searchTerm: searchTerm.value,
-      type: selectedType.value, // 添加资源类型参数
-      page: newPage ,
-      size: pageSize.value
-    })
-  } else {
-    resourceStore.fetchResources(newPage, pageSize.value, selectedType.value)
-  }
+  resourceStore.searchResources({
+    searchTerm: searchTerm.value || '',
+    type: selectedType.value || '',
+    page: newPage, 
+    size: pageSize.value
+  })
 }
 
 const resetSearch = () => {
   resourceStore.resetSearch()
 }
 
-onMounted(() => {
-  if (!hasResources.value && !searchTerm.value) {
-    resourceStore.fetchResources(1, 10, selectedType.value)
-  }
-})
+// 移除 onMounted，避免与 Home.vue 重复调用
+// 资源加载由 Home.vue 统一管理
 </script>
 
 <style scoped>

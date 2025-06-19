@@ -99,9 +99,11 @@ watch(searchTerm, (newTerm) => {
 })
 
 // 监听store中的selectedType变化，同步到表单
+// 只在重置时同步，避免搜索时的循环更新
 watch(selectedType, (newType) => {
-  if (newType !== searchForm.selectedType) {
-    searchForm.selectedType = newType
+  // 只有在重置时（store中的值为空）才同步到表单
+  if (newType === '') {
+    searchForm.selectedType = ''
   }
 })
 
@@ -116,14 +118,19 @@ const handleSearch = () => {
 
   if (!term) {
     // 清空搜索时，获取默认资源列表（但保持类型过滤）
-    resourceStore.fetchResources(1, 10, searchForm.selectedType)
+    resourceStore.searchResources({
+      searchTerm: '',
+      type: searchForm.selectedType || '',
+      page: 1,
+      size: 10
+    })
     return
   }
 
   const searchData = {
     searchTerm: term,
-    type: searchForm.selectedType, // 添加资源类型参数
-    page: 1,
+    type: searchForm.selectedType || '', // 添加资源类型参数
+    page: 1, 
     size: 10
   }
 

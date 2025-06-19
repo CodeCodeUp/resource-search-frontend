@@ -54,7 +54,7 @@
         <button onclick="testTypeSearch()">测试类型搜索</button>
         <button onclick="testCombinedSearch()">测试组合搜索</button>
         <button onclick="testAllTypes()">测试所有类型</button>
-        <button onclick="testPageWithType()">测试分页+类型</button>
+        <button onclick="testUnifiedInterface()">测试统一接口</button>
     </div>
 
     <div class="test-section">
@@ -156,50 +156,44 @@
             }
         }
 
-        async function testPageWithType() {
-            console.log('🧪 测试分页+类型...');
+        async function testUnifiedInterface() {
+            console.log('🧪 测试统一接口...');
 
-            // 模拟 getResourcesPage API 调用
-            async function callPageAPI(page, size, type) {
-                console.log('📄 调用分页 API:', { page, size, type });
+            // 测试1: 获取所有资源（空搜索词）
+            const result1 = await callSearchAPI({
+                searchTerm: '',
+                type: '',
+                page: 0,
+                size: 5
+            });
+            displayResult('统一接口 - 获取所有资源', result1);
 
-                const mockResources = [
-                    { id: 1, name: 'Vue.js 教程', type: 'study', content: '前端框架学习资料' },
-                    { id: 2, name: 'React 入门', type: 'study', content: 'React 学习资料' },
-                    { id: 3, name: '复仇者联盟', type: 'movie', content: '超级英雄电影' },
-                    { id: 4, name: '进击的巨人', type: 'anime', content: '热门动漫作品' },
-                    { id: 5, name: '数据结构与算法', type: 'study', content: '计算机专业课程' },
-                    { id: 6, name: '斗破苍穹', type: 'novel', content: '玄幻小说经典' }
-                ];
+            // 测试2: 按类型获取资源（空搜索词 + 类型）
+            const result2 = await callSearchAPI({
+                searchTerm: '',
+                type: 'study',
+                page: 0,
+                size: 5
+            });
+            displayResult('统一接口 - 按类型获取资源', result2);
 
-                let filtered = mockResources;
+            // 测试3: 搜索 + 类型
+            const result3 = await callSearchAPI({
+                searchTerm: 'Vue',
+                type: 'study',
+                page: 0,
+                size: 5
+            });
+            displayResult('统一接口 - 搜索+类型', result3);
 
-                // 按类型过滤
-                if (type) {
-                    filtered = filtered.filter(resource => resource.type === type);
-                }
-
-                const start = (page - 1) * size;
-                const end = start + size;
-                const list = filtered.slice(start, end);
-
-                const result = {
-                    total: filtered.length,
-                    list: list,
-                    pageNum: page,
-                    pageSize: size
-                };
-
-                console.log('✅ 分页 API 响应:', result);
-                return result;
-            }
-
-            // 测试不同的分页+类型组合
-            const result1 = await callPageAPI(1, 3, 'study');
-            displayResult('分页+类型 (page: 1, size: 3, type: "study")', result1);
-
-            const result2 = await callPageAPI(1, 5, '');
-            displayResult('分页无类型 (page: 1, size: 5, type: "")', result2);
+            // 测试4: 分页测试
+            const result4 = await callSearchAPI({
+                searchTerm: '',
+                type: 'study',
+                page: 1,
+                size: 2
+            });
+            displayResult('统一接口 - 分页测试 (第2页)', result4);
         }
 
         // 页面加载完成后的初始化
