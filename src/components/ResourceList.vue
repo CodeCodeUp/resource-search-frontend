@@ -73,7 +73,8 @@ const {
   pageSize,
   total,
   totalPages,
-  searchTerm
+  searchTerm,
+  selectedType
 } = storeToRefs(resourceStore)
 
 const handleSizeChange = (newSize) => {
@@ -81,11 +82,12 @@ const handleSizeChange = (newSize) => {
   if (searchTerm.value) {
     resourceStore.searchResources({
       searchTerm: searchTerm.value,
+      type: selectedType.value, // 添加资源类型参数
       page: 1,
       size: newSize
     })
   } else {
-    resourceStore.fetchResources(1, newSize)
+    resourceStore.fetchResources(1, newSize, selectedType.value)
   }
 }
 
@@ -93,11 +95,12 @@ const handleCurrentChange = (newPage) => {
   if (searchTerm.value) {
     resourceStore.searchResources({
       searchTerm: searchTerm.value,
+      type: selectedType.value, // 添加资源类型参数
       page: newPage ,
       size: pageSize.value
     })
   } else {
-    resourceStore.fetchResources(newPage, pageSize.value)
+    resourceStore.fetchResources(newPage, pageSize.value, selectedType.value)
   }
 }
 
@@ -107,7 +110,7 @@ const resetSearch = () => {
 
 onMounted(() => {
   if (!hasResources.value && !searchTerm.value) {
-    resourceStore.fetchResources()
+    resourceStore.fetchResources(1, 10, selectedType.value)
   }
 })
 </script>

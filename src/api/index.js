@@ -47,12 +47,12 @@ export const resourceApi = {
   },
 
   // 分页获取资源
-  getResourcesPage(page = 1, size = 10) {
+  getResourcesPage(page = 1, size = 10, type) {
     if (useMock) {
-      return mockApi.getResourcesPage(page, size)
+      return mockApi.getResourcesPage(page, size, type)
     }
     return api.get('/resources/page', {
-      params: { page, size }
+      params: { page, size, type }
     })
   },
 

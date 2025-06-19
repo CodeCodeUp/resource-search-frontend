@@ -20,6 +20,15 @@ export const testApi = async () => {
     console.log('  - pageNum:', resources.pageNum)
     console.log('  - 第一条数据:', resources.list?.[0])
 
+    // 测试带类型的资源列表
+    console.log('📄 测试带类型的资源列表...')
+    const typeResources = await resourceApi.getResourcesPage(1, 5, 'study')
+    console.log('✅ 类型资源列表 (study):', typeResources)
+    console.log('📊 类型资源列表验证:')
+    console.log('  - total:', typeResources.total)
+    console.log('  - list:', typeResources.list?.length, '条记录')
+    console.log('  - 资源类型:', typeResources.list?.map(r => r.type))
+
     // 测试搜索功能
     console.log('🔍 测试搜索功能...')
     const searchResult = await resourceApi.searchResources({
@@ -32,6 +41,20 @@ export const testApi = async () => {
     console.log('  - total:', searchResult.total)
     console.log('  - list:', searchResult.list?.length, '条记录')
     console.log('  - pageNum:', searchResult.pageNum)
+
+    // 测试带类型的搜索功能
+    console.log('🔍 测试带类型的搜索功能...')
+    const typeSearchResult = await resourceApi.searchResources({
+      searchTerm: '',
+      type: 'study',
+      page: 1,
+      size: 5
+    })
+    console.log('✅ 类型搜索结果 (study):', typeSearchResult)
+    console.log('📊 类型搜索结果验证:')
+    console.log('  - total:', typeSearchResult.total)
+    console.log('  - list:', typeSearchResult.list?.length, '条记录')
+    console.log('  - 资源类型:', typeSearchResult.list?.map(r => r.type))
 
     // 测试资源类型映射
     console.log('🏷️ 测试资源类型映射...')

@@ -35,10 +35,10 @@ export const useResourceStore = defineStore('resource', () => {
   }
 
   // 获取资源列表
-  const fetchResources = async (page = 1, size = 10) => {
+  const fetchResources = async (page = 1, size = 10, type = '') => {
     try {
       loading.value = true
-      const data = await resourceApi.getResourcesPage(page, size)
+      const data = await resourceApi.getResourcesPage(page, size, type)
       resources.value = data.list || data.content || data.records || data.data || []
       total.value = data.total || data.totalElements || 0
       currentPage.value = data.pageNum || page
@@ -60,6 +60,7 @@ export const useResourceStore = defineStore('resource', () => {
       total.value = data.total || data.totalElements || 0
       currentPage.value = data.pageNum || (searchData.page + 1)
       searchTerm.value = searchData.searchTerm
+      selectedType.value = searchData.type || '' // 保存选中的资源类型
 
       if (resources.value.length === 0) {
         showMessage.info('未找到相关资源，请尝试其他关键词')

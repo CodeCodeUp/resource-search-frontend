@@ -4,9 +4,9 @@
       <div class="search-header">
         <h1 class="search-title">
           <el-icon class="title-icon"><Search /></el-icon>
-          资源搜索平台
+          机器学习训练结果测试
         </h1>
-        <p class="search-subtitle">发现优质资源，助力学习成长</p>
+        <p class="search-subtitle">自动识别数据</p>
       </div>
       
       <div class="search-form">
@@ -76,7 +76,7 @@ import { getSearchFromQuery, buildSearchQuery } from '@/utils/url'
 const route = useRoute()
 const router = useRouter()
 const resourceStore = useResourceStore()
-const { resourceTypes, searchLoading, searchTerm } = storeToRefs(resourceStore)
+const { resourceTypes, searchLoading, searchTerm, selectedType } = storeToRefs(resourceStore)
 
 const searchForm = reactive({
   searchTerm: '',
@@ -98,6 +98,13 @@ watch(searchTerm, (newTerm) => {
   }
 })
 
+// 监听store中的selectedType变化，同步到表单
+watch(selectedType, (newType) => {
+  if (newType !== searchForm.selectedType) {
+    searchForm.selectedType = newType
+  }
+})
+
 const handleSearch = () => {
   const term = searchForm.searchTerm.trim()
 
@@ -108,13 +115,14 @@ const handleSearch = () => {
   router.push({ query: newQuery })
 
   if (!term) {
-    // 清空搜索时，获取默认资源列表
-    resourceStore.fetchResources()
+    // 清空搜索时，获取默认资源列表（但保持类型过滤）
+    resourceStore.fetchResources(1, 10, searchForm.selectedType)
     return
   }
 
   const searchData = {
     searchTerm: term,
+    type: searchForm.selectedType, // 添加资源类型参数
     page: 1,
     size: 10
   }

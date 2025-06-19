@@ -111,32 +111,39 @@ export const mockApi = {
     })
   },
 
-  getResourcesPage: (page = 1, size = 10) => {
+  getResourcesPage: (page = 1, size = 10, type = '') => {
     return new Promise((resolve) => {
       setTimeout(() => {
+        let filtered = mockResources
+
+        // 按资源类型过滤
+        if (type) {
+          filtered = filtered.filter(resource => resource.type === type)
+        }
+
         const start = (page - 1) * size
         const end = start + size
-        const list = mockResources.slice(start, end)
+        const list = filtered.slice(start, end)
 
         resolve({
-          total: mockResources.length,
+          total: filtered.length,
           list,
           pageNum: page,
           pageSize: size,
           size: list.length,
           startRow: start,
           endRow: end - 1,
-          pages: Math.ceil(mockResources.length / size),
+          pages: Math.ceil(filtered.length / size),
           prePage: page > 1 ? page - 1 : 0,
-          nextPage: page < Math.ceil(mockResources.length / size) ? page + 1 : 0,
+          nextPage: page < Math.ceil(filtered.length / size) ? page + 1 : 0,
           isFirstPage: page === 1,
-          isLastPage: page === Math.ceil(mockResources.length / size),
+          isLastPage: page === Math.ceil(filtered.length / size),
           hasPreviousPage: page > 1,
-          hasNextPage: page < Math.ceil(mockResources.length / size),
+          hasNextPage: page < Math.ceil(filtered.length / size),
           navigatePages: 8,
           navigatepageNums: [page],
           navigateFirstPage: 1,
-          navigateLastPage: Math.ceil(mockResources.length / size)
+          navigateLastPage: Math.ceil(filtered.length / size)
         })
       }, 800)
     })
@@ -145,14 +152,21 @@ export const mockApi = {
   searchResources: (searchData) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const { searchTerm, page = 0, size = 10 } = searchData
+        const { searchTerm, type, page = 0, size = 10 } = searchData
 
         let filtered = mockResources
+
+        // 按搜索词过滤
         if (searchTerm) {
-          filtered = mockResources.filter(resource =>
+          filtered = filtered.filter(resource =>
             resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             resource.content.toLowerCase().includes(searchTerm.toLowerCase())
           )
+        }
+
+        // 按资源类型过滤
+        if (type) {
+          filtered = filtered.filter(resource => resource.type === type)
         }
 
         const start = page * size
