@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试URL参数功能</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .test-link {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        .test-link strong {
+            display: block;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        .test-link small {
+            color: #6c757d;
+            font-family: monospace;
+        }
+        .expected-result {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .expected-result h4 {
+            margin: 0 0 10px 0;
+            color: #155724;
+        }
+        .expected-result ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .expected-result li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试URL参数功能</h1>
+    
+    <div class="test-section">
+        <h2>功能说明</h2>
+        <p>现在应用支持通过URL参数来设置搜索词和资源类型：</p>
+        <ul>
+            <li><code>?search=关键词</code> - 设置搜索词</li>
+            <li><code>?type=类型</code> - 设置资源类型</li>
+            <li><code>?search=关键词&type=类型</code> - 同时设置搜索词和类型</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>测试链接</h2>
+        <p>点击以下链接测试不同的URL参数组合：</p>
+        
+        <div class="test-links">
+            <a href="http://localhost:3000/" class="test-link">
+                <strong>默认页面</strong>
+                <small>http://localhost:3000/</small>
+            </a>
+            
+            <a href="http://localhost:3000/?search=Vue" class="test-link">
+                <strong>仅搜索词</strong>
+                <small>?search=Vue</small>
+            </a>
+            
+            <a href="http://localhost:3000/?type=study" class="test-link">
+                <strong>仅资源类型</strong>
+                <small>?type=study</small>
+            </a>
+            
+            <a href="http://localhost:3000/?search=Vue&type=study" class="test-link">
+                <strong>搜索词+类型</strong>
+                <small>?search=Vue&type=study</small>
+            </a>
+            
+            <a href="http://localhost:3000/?search=电影&type=movie" class="test-link">
+                <strong>中文搜索+影视类型</strong>
+                <small>?search=电影&type=movie</small>
+            </a>
+            
+            <a href="http://localhost:3000/?search=动漫&type=anime" class="test-link">
+                <strong>动漫搜索+动漫类型</strong>
+                <small>?search=动漫&type=anime</small>
+            </a>
+            
+            <a href="http://localhost:3000/?type=novel" class="test-link">
+                <strong>小说类型过滤</strong>
+                <small>?type=novel</small>
+            </a>
+            
+            <a href="http://localhost:3000/?search=壁纸&type=wallpaper" class="test-link">
+                <strong>壁纸搜索+壁纸类型</strong>
+                <small>?search=壁纸&type=wallpaper</small>
+            </a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>预期行为</h2>
+        
+        <div class="expected-result">
+            <h4>✅ 页面加载时</h4>
+            <ul>
+                <li>搜索框应该自动填入URL中的search参数</li>
+                <li>资源类型下拉框应该自动选中URL中的type参数</li>
+                <li>自动执行搜索，显示对应的结果</li>
+            </ul>
+        </div>
+        
+        <div class="expected-result">
+            <h4>✅ 搜索操作时</h4>
+            <ul>
+                <li>修改搜索词或类型后点击搜索</li>
+                <li>URL应该自动更新，包含新的search和type参数</li>
+                <li>浏览器前进/后退按钮应该正常工作</li>
+            </ul>
+        </div>
+        
+        <div class="expected-result">
+            <h4>✅ 重置操作时</h4>
+            <ul>
+                <li>点击重置按钮</li>
+                <li>URL应该清空所有参数</li>
+                <li>搜索框和类型选择框应该都被清空</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>资源类型对照表</h2>
+        <p>URL中type参数与显示名称的对应关系：</p>
+        <ul>
+            <li><code>study</code> → 学习</li>
+            <li><code>movie</code> → 影视</li>
+            <li><code>anime</code> → 动漫</li>
+            <li><code>comic</code> → 漫画</li>
+            <li><code>game</code> → 游戏</li>
+            <li><code>shortdrama</code> → 短剧</li>
+            <li><code>novel</code> → 小说</li>
+            <li><code>wallpaper</code> → 壁纸</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>技术实现说明</h2>
+        <p><strong>新增功能：</strong></p>
+        <ul>
+            <li>URL工具函数：<code>getTypeFromQuery</code>、<code>buildFullQuery</code></li>
+            <li>Home.vue：统一处理URL中的search和type参数</li>
+            <li>SearchBar.vue：初始化时从URL读取参数，搜索时更新URL</li>
+            <li>路由监听：深度监听query对象变化，支持前进/后退</li>
+        </ul>
+    </div>
+
+    <script>
+        // 页面加载完成后的提示
+        window.onload = function() {
+            console.log('📋 URL参数测试页面已加载');
+            console.log('💡 点击测试链接验证不同的URL参数组合');
+            console.log('🔗 主应用地址: http://localhost:3000/');
+            
+            // 显示当前URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString()) {
+                console.log('🔍 当前URL参数:', urlParams.toString());
+            }
+        };
+    </script>
+</body>
+</html>

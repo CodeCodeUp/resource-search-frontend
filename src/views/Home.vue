@@ -38,50 +38,43 @@ import { useRoute } from 'vue-router'
 import SearchBar from '@/components/SearchBar.vue'
 import ResourceList from '@/components/ResourceList.vue'
 import { useResourceStore } from '@/stores/resource'
-import { getSearchFromQuery } from '@/utils/url'
+import { getSearchFromQuery, getTypeFromQuery } from '@/utils/url'
 
 const route = useRoute()
 const resourceStore = useResourceStore()
 
-// 处理搜索逻辑的函数
-const handleUrlSearch = async (searchParam) => {
-  const searchTerm = getSearchFromQuery({ search: searchParam })
+// 处理URL参数的搜索逻辑函数
+const handleUrlParams = async (query) => {
+  const searchTerm = getSearchFromQuery(query)
+  const type = getTypeFromQuery(query)
 
-  if (searchTerm) {
-    // 如果URL中有搜索参数，执行搜索
-    const searchData = {
-      searchTerm,
-      type: '',
-      page: 1, 
-      size: 10
-    }
-    await resourceStore.searchResources(searchData)
-  } else {
-    // 如果没有搜索参数，获取默认资源列表
-    await resourceStore.searchResources({
-      searchTerm: '',
-      type: '',
-      page: 1,
-      size: 10
-    })
+  // 构建搜索数据，包含URL中的搜索词和类型参数
+  const searchData = {
+    searchTerm: searchTerm || '',
+    type: type || '',
+    page: 0, // searchResources 使用 0 基索引
+    size: 10
   }
+
+  await resourceStore.searchResources(searchData)
 }
 
 onMounted(async () => {
   // 初始化时获取资源类型
   await resourceStore.fetchResourceTypes()
 
-  // 处理初始URL搜索参数
-  await handleUrlSearch(route.query.search)
+  // 处理初始URL参数（搜索词和类型）
+  await handleUrlParams(route.query)
 })
 
 // 监听路由查询参数变化
 watch(
-  () => route.query.search,
-  async (newSearch) => {
-    // 当URL中的搜索参数变化时，自动执行搜索
-    await handleUrlSearch(newSearch)
-  }
+  () => route.query,
+  async (newQuery) => {
+    // 当URL中的查询参数变化时，自动执行搜索
+    await handleUrlParams(newQuery)
+  },
+  { deep: true } // 深度监听查询对象的变化
 )
 </script>
 

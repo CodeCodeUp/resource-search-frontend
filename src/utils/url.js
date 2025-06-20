@@ -43,6 +43,16 @@ export const getSearchFromQuery = (query) => {
 }
 
 /**
+ * 从URL查询参数中获取资源类型
+ * @param {Object} query - 路由查询对象
+ * @returns {string} 资源类型
+ */
+export const getTypeFromQuery = (query) => {
+  const typeParam = query.type
+  return safeDecodeURIComponent(typeParam)
+}
+
+/**
  * 构建包含搜索参数的查询对象
  * @param {Object} currentQuery - 当前查询对象
  * @param {string} searchTerm - 搜索词
@@ -54,11 +64,57 @@ export const buildSearchQuery = (currentQuery, searchTerm) => {
     const { search, ...otherQuery } = currentQuery
     return otherQuery
   }
-  
+
   return {
     ...currentQuery,
     search: safeEncodeURIComponent(searchTerm.trim())
   }
+}
+
+/**
+ * 构建包含类型参数的查询对象
+ * @param {Object} currentQuery - 当前查询对象
+ * @param {string} type - 资源类型
+ * @returns {Object} 新的查询对象
+ */
+export const buildTypeQuery = (currentQuery, type) => {
+  if (!type || !type.trim()) {
+    // 如果类型为空，移除type参数
+    const { type: _, ...otherQuery } = currentQuery
+    return otherQuery
+  }
+
+  return {
+    ...currentQuery,
+    type: safeEncodeURIComponent(type.trim())
+  }
+}
+
+/**
+ * 构建完整的查询参数对象
+ * @param {Object} currentQuery - 当前查询对象
+ * @param {string} searchTerm - 搜索词
+ * @param {string} type - 资源类型
+ * @returns {Object} 新的查询对象
+ */
+export const buildFullQuery = (currentQuery, searchTerm, type) => {
+  let newQuery = { ...currentQuery }
+
+  // 处理搜索词
+  if (!searchTerm || !searchTerm.trim()) {
+    delete newQuery.search
+  } else {
+    newQuery.search = safeEncodeURIComponent(searchTerm.trim())
+  }
+
+  // 处理类型
+  if (!type || !type.trim()) {
+    delete newQuery.type
+  } else {
+    newQuery.type = safeEncodeURIComponent(type.trim())
+  }
+
+  return newQuery
 }
 
 /**
@@ -68,4 +124,13 @@ export const buildSearchQuery = (currentQuery, searchTerm) => {
  */
 export const hasSearchQuery = (query) => {
   return !!(query && query.search)
+}
+
+/**
+ * 检查URL是否包含类型参数
+ * @param {Object} query - 路由查询对象
+ * @returns {boolean} 是否包含类型参数
+ */
+export const hasTypeQuery = (query) => {
+  return !!(query && query.type)
 }

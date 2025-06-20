@@ -71,7 +71,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
-import { getSearchFromQuery, buildSearchQuery } from '@/utils/url'
+import { getSearchFromQuery, getTypeFromQuery, buildFullQuery } from '@/utils/url'
 
 const route = useRoute()
 const router = useRouter()
@@ -83,11 +83,17 @@ const searchForm = reactive({
   selectedType: ''
 })
 
-// 初始化时从URL参数设置搜索词
+// 初始化时从URL参数设置搜索词和类型
 onMounted(() => {
   const searchTerm = getSearchFromQuery(route.query)
+  const type = getTypeFromQuery(route.query)
+
   if (searchTerm) {
     searchForm.searchTerm = searchTerm
+  }
+
+  if (type) {
+    searchForm.selectedType = type
   }
 })
 
@@ -109,9 +115,10 @@ watch(selectedType, (newType) => {
 
 const handleSearch = () => {
   const term = searchForm.searchTerm.trim()
+  const type = searchForm.selectedType
 
-  // 构建新的查询参数
-  const newQuery = buildSearchQuery(route.query, term)
+  // 构建新的查询参数，包含搜索词和类型
+  const newQuery = buildFullQuery(route.query, term, type)
 
   // 更新URL
   router.push({ query: newQuery })
