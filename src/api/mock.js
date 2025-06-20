@@ -138,25 +138,49 @@ export const mockApi = {
         const list = filtered.slice(start, end)
         const pageNum = page + 1
 
+        // 模拟搜索策略和关键词提取
+        let searchStrategy = 'complete'
+        let words = []
+
+        if (searchTerm) {
+          // 分析搜索结果，决定搜索策略
+          const exactMatches = filtered.filter(resource =>
+            resource.name.toLowerCase() === searchTerm.toLowerCase() ||
+            resource.content.toLowerCase() === searchTerm.toLowerCase()
+          )
+
+          // 如果没有完全匹配，则认为是相似搜索
+          if (exactMatches.length === 0 && filtered.length > 0) {
+            searchStrategy = 'similar'
+          }
+
+          // 提取关键词（简单分词）
+          words = searchTerm.split(/\s+/).filter(word => word.trim().length > 0)
+        }
+
         resolve({
-          total: filtered.length,
-          list,
-          pageNum,
-          pageSize: size,
-          size: list.length,
-          startRow: start,
-          endRow: end - 1,
-          pages: Math.ceil(filtered.length / size),
-          prePage: pageNum > 1 ? pageNum - 1 : 0,
-          nextPage: pageNum < Math.ceil(filtered.length / size) ? pageNum + 1 : 0,
-          isFirstPage: pageNum === 1,
-          isLastPage: pageNum === Math.ceil(filtered.length / size),
-          hasPreviousPage: pageNum > 1,
-          hasNextPage: pageNum < Math.ceil(filtered.length / size),
-          navigatePages: 8,
-          navigatepageNums: [pageNum],
-          navigateFirstPage: 1,
-          navigateLastPage: Math.ceil(filtered.length / size)
+          pageInfo: {
+            total: filtered.length,
+            list,
+            pageNum,
+            pageSize: size,
+            size: list.length,
+            startRow: start,
+            endRow: end - 1,
+            pages: Math.ceil(filtered.length / size),
+            prePage: pageNum > 1 ? pageNum - 1 : 0,
+            nextPage: pageNum < Math.ceil(filtered.length / size) ? pageNum + 1 : 0,
+            isFirstPage: pageNum === 1,
+            isLastPage: pageNum === Math.ceil(filtered.length / size),
+            hasPreviousPage: pageNum > 1,
+            hasNextPage: pageNum < Math.ceil(filtered.length / size),
+            navigatePages: 8,
+            navigatepageNums: [pageNum],
+            navigateFirstPage: 1,
+            navigateLastPage: Math.ceil(filtered.length / size)
+          },
+          searchStrategy,
+          words
         })
       }, 600)
     })

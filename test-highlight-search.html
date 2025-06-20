@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索高亮和相似资源提示功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border: 1px solid #e8eaff;
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+        }
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        .feature-description {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .test-steps {
+            background: #e8f4fd;
+            border: 1px solid #b3d8f2;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .test-steps h4 {
+            margin: 0 0 12px 0;
+            color: #0066cc;
+        }
+        .test-steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .test-steps li {
+            margin: 8px 0;
+            color: #2c3e50;
+        }
+        .highlight-demo {
+            background: linear-gradient(120deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3);
+        }
+        .test-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin: 8px;
+            transition: background 0.3s ease;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .status-box {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+        .status-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 搜索高亮和相似资源提示功能</h1>
+    
+    <div class="test-section">
+        <h2>✨ 新功能概览</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-title">🎯 智能搜索提示</div>
+                <div class="feature-description">
+                    当搜索策略不是"complete"时，自动显示"为您找到以下相似资源"的友好提示
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-title">🌟 关键词高亮</div>
+                <div class="feature-description">
+                    自动高亮显示资源名称和描述中包含的搜索关键词，如：<span class="highlight-demo">Vue</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-title">📊 数据结构升级</div>
+                <div class="feature-description">
+                    支持新的API响应格式，包含pageInfo、searchStrategy和words字段
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-title">🎨 视觉优化</div>
+                <div class="feature-description">
+                    精美的高亮样式，渐变背景，悬停效果，提升用户体验
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 功能测试</h2>
+        
+        <div class="test-steps">
+            <h4>🔍 搜索高亮测试</h4>
+            <ol>
+                <li>访问主应用：<a href="http://localhost:3000/" target="_blank" class="test-link">打开应用</a></li>
+                <li>在搜索框中输入关键词，如："Vue"、"电影"、"学习"</li>
+                <li>观察搜索结果中的关键词是否被高亮显示</li>
+                <li>点击资源卡片，检查弹窗中的高亮效果</li>
+            </ol>
+        </div>
+        
+        <div class="test-steps">
+            <h4>💡 相似资源提示测试</h4>
+            <ol>
+                <li>搜索一些不完全匹配的关键词</li>
+                <li>观察是否显示"为您找到以下相似资源"的提示</li>
+                <li>尝试不同的搜索词组合</li>
+            </ol>
+        </div>
+        
+        <div class="test-steps">
+            <h4>🎯 多关键词测试</h4>
+            <ol>
+                <li>输入包含空格的搜索词，如："Vue 教程"</li>
+                <li>观察每个关键词是否都被正确高亮</li>
+                <li>测试中文和英文混合搜索</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 技术实现详情</h2>
+        
+        <h3>1. 数据结构变更</h3>
+        <div class="status-info">
+            <strong>新的API响应格式：</strong><br>
+            • <code>pageInfo.list</code> - 资源列表<br>
+            • <code>searchStrategy</code> - 搜索策略（complete/similar）<br>
+            • <code>words</code> - 提取的关键词数组
+        </div>
+        
+        <h3>2. 高亮算法</h3>
+        <div class="status-info">
+            <strong>智能高亮处理：</strong><br>
+            • HTML转义防止XSS攻击<br>
+            • 正则表达式特殊字符转义<br>
+            • 按关键词长度排序，优先匹配长词<br>
+            • 不区分大小写匹配
+        </div>
+        
+        <h3>3. 样式设计</h3>
+        <div class="status-info">
+            <strong>视觉效果：</strong><br>
+            • 金色渐变背景<br>
+            • 柔和阴影效果<br>
+            • 悬停动画<br>
+            • 响应式设计
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 预期效果</h2>
+        
+        <div class="status-success">
+            <h4>✅ 搜索高亮</h4>
+            <ul>
+                <li>资源卡片中的标题和描述关键词被高亮显示</li>
+                <li>弹窗中的资源信息也有高亮效果</li>
+                <li>支持多个关键词同时高亮</li>
+                <li>高亮样式美观，有悬停效果</li>
+            </ul>
+        </div>
+        
+        <div class="status-success">
+            <h4>✅ 智能提示</h4>
+            <ul>
+                <li>完全匹配时不显示额外提示</li>
+                <li>相似匹配时显示"为您找到以下相似资源"</li>
+                <li>无结果时显示"未找到相关资源"</li>
+            </ul>
+        </div>
+        
+        <div class="status-success">
+            <h4>✅ 用户体验</h4>
+            <ul>
+                <li>搜索结果更加直观</li>
+                <li>关键信息突出显示</li>
+                <li>友好的反馈信息</li>
+                <li>视觉效果精美</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 快速测试链接</h2>
+        <p>点击以下链接快速测试不同的搜索场景：</p>
+        
+        <a href="http://localhost:3000/?search=Vue" target="_blank" class="test-link">搜索 "Vue"</a>
+        <a href="http://localhost:3000/?search=电影" target="_blank" class="test-link">搜索 "电影"</a>
+        <a href="http://localhost:3000/?search=Vue 教程" target="_blank" class="test-link">搜索 "Vue 教程"</a>
+        <a href="http://localhost:3000/?search=学习&type=study" target="_blank" class="test-link">搜索 "学习" + 类型过滤</a>
+    </div>
+
+    <script>
+        // 页面加载完成后的提示
+        window.onload = function() {
+            console.log('🔍 搜索高亮功能测试页面已加载');
+            console.log('✨ 新功能：智能搜索提示 + 关键词高亮');
+            console.log('🧪 开始测试各种搜索场景');
+        };
+    </script>
+</body>
+</html>

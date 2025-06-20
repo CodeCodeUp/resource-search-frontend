@@ -23,11 +23,11 @@
     
     <div class="card-content">
       <h3 class="card-title" :title="resource.name">
-        {{ resource.name }}
+        <span v-html="highlightedName"></span>
       </h3>
       
       <p class="card-description" :title="resource.content">
-        {{ resource.content || '暂无描述' }}
+        <span v-html="highlightedContent || '暂无描述'"></span>
       </p>
       
       <div class="card-footer">
@@ -82,8 +82,12 @@
         </div>
 
         <div class="resource-details">
-          <h3 class="resource-title">{{ resource.name }}</h3>
-          <p class="resource-description">{{ resource.content || '暂无描述' }}</p>
+          <h3 class="resource-title">
+            <span v-html="highlightedName"></span>
+          </h3>
+          <p class="resource-description">
+            <span v-html="highlightedContent || '暂无描述'"></span>
+          </p>
           <div class="resource-meta">
             <el-tag size="small" type="info">
               {{ getResourceType(resource.type || resource.typeId) }}
@@ -168,10 +172,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { View, Link, DocumentCopy, Check, TopRight } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
+import { highlightText } from '@/utils/highlight'
 import { processImageUrl, generateDefaultImage } from '@/utils/image'
 import { getImageFitMode, getImageInfo, imageConfig } from '@/config/image'
 
@@ -183,7 +188,7 @@ const props = defineProps({
 })
 
 const resourceStore = useResourceStore()
-const { resourceTypes } = storeToRefs(resourceStore)
+const { resourceTypes, searchWords } = storeToRefs(resourceStore)
 
 // 图片加载状态
 const imageLoading = ref(false)
@@ -195,6 +200,15 @@ const useAutoFit = ref(false)
 // 弹窗状态
 const dialogVisible = ref(false)
 const copySuccess = ref(false)
+
+// 高亮显示的文本
+const highlightedName = computed(() => {
+  return highlightText(props.resource.name || '', searchWords.value)
+})
+
+const highlightedContent = computed(() => {
+  return highlightText(props.resource.content || '', searchWords.value)
+})
 
 // 默认图片
 const defaultImage = generateDefaultImage('无图片')
@@ -479,6 +493,22 @@ const formatTime = (timeStr) => {
 .card-actions {
   display: flex;
   gap: 8px;
+}
+
+/* 高亮样式 */
+:deep(.highlight) {
+  background: linear-gradient(120deg, #ffd700 0%, #ffed4e 100%);
+  color: #333;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+:deep(.highlight:hover) {
+  background: linear-gradient(120deg, #ffed4e 0%, #ffd700 100%);
+  transform: scale(1.02);
 }
 
 /* 弹窗样式 */

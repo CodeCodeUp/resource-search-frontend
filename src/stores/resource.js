@@ -14,6 +14,8 @@ export const useResourceStore = defineStore('resource', () => {
   const total = ref(0)
   const searchTerm = ref('')
   const selectedType = ref('')
+const searchStrategy = ref('') // 搜索策略
+const searchWords = ref([]) // 搜索关键词列表
 
   // 计算属性
   const hasResources = computed(() => resources.value.length > 0)
@@ -50,22 +52,34 @@ export const useResourceStore = defineStore('resource', () => {
     try {
       searchLoading.value = true
       const data = await resourceApi.searchResources(searchData)
-      resources.value = data.pageInfo.list
-      total.value = data.pageInfo.total || 0
-      currentPage.value = data.pageInfo.pageNum || searchData.page
+
+      // 处理搜索结果
+      resources.value = data.pageInfo?.list || data.list || []
+      total.value = data.pageInfo?.total || data.total || 0
+      currentPage.value = data.pageInfo?.pageNum || searchData.page
       searchTerm.value = searchData.searchTerm || ''
+
+      // 保存搜索策略和关键词
+      searchStrategy.value = data.searchStrategy || ''
+      searchWords.value = data.words || []
+
       // 保存选中的资源类型，但不覆盖用户的选择
       if (searchData.type !== undefined) {
         selectedType.value = searchData.type
       }
 
+      // 根据搜索策略显示不同的提示信息
       if (resources.value.length === 0) {
         showMessage.info('未找到相关资源，请尝试其他关键词')
+      } else if (searchData.searchTerm && searchStrategy.value !== 'complete') {
+        showMessage.success('为您找到以下相似资源')
       }
     } catch (error) {
       console.error('搜索资源失败:', error)
       resources.value = []
       total.value = 0
+      searchStrategy.value = ''
+      searchWords.value = []
     } finally {
       searchLoading.value = false
     }
@@ -97,11 +111,13 @@ export const useResourceStore = defineStore('resource', () => {
     total,
     searchTerm,
     selectedType,
-    
+    searchStrategy,
+    searchWords,
+
     // 计算属性
     hasResources,
     totalPages,
-    
+
     // 方法
     fetchResourceTypes,
     fetchResources,
