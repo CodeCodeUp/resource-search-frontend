@@ -50,9 +50,9 @@ export const useResourceStore = defineStore('resource', () => {
     try {
       searchLoading.value = true
       const data = await resourceApi.searchResources(searchData)
-      resources.value = data.list || data.content || data.records || data.data || []
-      total.value = data.total || data.totalElements || 0
-      currentPage.value = data.pageNum || (searchData.page + 1)
+      resources.value = data.pageInfo.list
+      total.value = data.pageInfo.total || 0
+      currentPage.value = data.pageInfo.pageNum || searchData.page
       searchTerm.value = searchData.searchTerm || ''
       // 保存选中的资源类型，但不覆盖用户的选择
       if (searchData.type !== undefined) {
