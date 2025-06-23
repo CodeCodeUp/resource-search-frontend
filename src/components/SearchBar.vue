@@ -120,28 +120,9 @@ const handleSearch = () => {
   // 构建新的查询参数，包含搜索词和类型
   const newQuery = buildFullQuery(route.query, term, type)
 
-  // 更新URL
+  // 只更新URL，让Home.vue的watch来处理搜索逻辑
+  // 这样避免重复调用接口
   router.push({ query: newQuery })
-
-  if (!term) {
-    // 清空搜索时，获取默认资源列表（但保持类型过滤）
-    resourceStore.searchResources({
-      searchTerm: '',
-      type: searchForm.selectedType || '',
-      page: 1,
-      size: 10
-    })
-    return
-  }
-
-  const searchData = {
-    searchTerm: term,
-    type: searchForm.selectedType || '', // 添加资源类型参数
-    page: 1, 
-    size: 10
-  }
-
-  resourceStore.searchResources(searchData)
 }
 
 const handleReset = () => {
