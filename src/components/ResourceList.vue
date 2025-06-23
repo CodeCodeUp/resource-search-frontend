@@ -4,7 +4,7 @@
     <div class="list-header" v-if="searchTerm">
       <div class="search-stats">
         <el-icon><Search /></el-icon>
-        搜索 "{{ searchTerm }}" 找到 {{ total }} 个结果
+        <span >搜索 "{{ searchTerm }}" 找到 {{ total }} 个结果</span>
       </div>
       <el-button text type="primary" @click="resetSearch">
         <el-icon><Close /></el-icon>
@@ -47,7 +47,7 @@
         v-model:current-page="currentPage"
         :page-size="pageSize"
         :total="total"
-        :page-sizes="[10, 20, 50]"
+        :page-sizes="[10]"
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -74,7 +74,8 @@ const {
   total,
   totalPages,
   searchTerm,
-  selectedType
+  selectedType,
+  searchStrategy
 } = storeToRefs(resourceStore)
 
 const handleSizeChange = (newSize) => {
@@ -82,7 +83,7 @@ const handleSizeChange = (newSize) => {
   resourceStore.searchResources({
     searchTerm: searchTerm.value || '',
     type: selectedType.value || '',
-    page: 0, // 重置到第一页
+    page: 1, // 重置到第一页
     size: newSize
   })
 }

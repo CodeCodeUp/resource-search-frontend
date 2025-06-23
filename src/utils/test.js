@@ -15,7 +15,7 @@ export const testApi = async () => {
     const resources = await resourceApi.searchResources({
       searchTerm: '',
       type: '',
-      page: 0,
+      page: 1,
       size: 5
     })
     console.log('✅ 资源列表:', resources)
@@ -30,7 +30,7 @@ export const testApi = async () => {
     const typeResources = await resourceApi.searchResources({
       searchTerm: '',
       type: 'study',
-      page: 0,
+      page: 1,
       size: 5
     })
     console.log('✅ 类型资源列表 (study):', typeResources)

@@ -95,7 +95,7 @@ const searchWords = ref([]) // 搜索关键词列表
     searchResources({
       searchTerm: '',
       type: '',
-      page: 0,
+      page: 1,
       size: pageSize.value
     })
   }

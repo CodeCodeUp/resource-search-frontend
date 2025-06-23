@@ -116,7 +116,7 @@ export const mockApi = {
   searchResources: (searchData) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const { searchTerm, type, page = 0, size = 10 } = searchData
+        const { searchTerm, type, page = 1, size = 10 } = searchData
 
         let filtered = mockResources
 

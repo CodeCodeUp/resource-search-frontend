@@ -52,7 +52,7 @@ const handleUrlParams = async (query) => {
   const searchData = {
     searchTerm: searchTerm || '',
     type: type || '',
-    page: 0, // searchResources 使用 0 基索引
+    page: 1, // searchResources 使用 0 基索引
     size: 10
   }
 
