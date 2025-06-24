@@ -1,9 +1,5 @@
 // 验证相关API
 import api from './index'
-import { mockVerifyApi } from './mock'
-
-// 是否使用Mock数据
-const useMock = import.meta.env.VITE_USE_MOCK === 'false'
 
 /**
  * 验证API服务
@@ -18,10 +14,6 @@ export const verifyApi = {
    * @returns {Promise} 挑战数据
    */
   getChallenge(params) {
-    if (useMock) {
-      return mockVerifyApi.getChallenge(params)
-    }
-
     // 将参数放在请求头中
     const headers = {
       'X-Device-Fingerprint': params.deviceFingerprint,
@@ -44,10 +36,6 @@ export const verifyApi = {
    * @returns {Promise} 验证结果
    */
   verifySlide(verifyData) {
-    if (useMock) {
-      return mockVerifyApi.verifySlide(verifyData)
-    }
-
     // 提取请求头参数
     const { deviceFingerprint, userAgent, timestamp, ...bodyData } = verifyData
 
@@ -69,9 +57,6 @@ export const verifyApi = {
    * @returns {Promise} 访问令牌
    */
   getAccessToken(accessData) {
-    if (useMock) {
-      return mockVerifyApi.getAccessToken(accessData)
-    }
     return api.post('/verify/access-token', accessData)
   },
 
@@ -81,9 +66,6 @@ export const verifyApi = {
    * @returns {Promise} 验证结果
    */
   validateAccessToken(token) {
-    if (useMock) {
-      return mockVerifyApi.validateAccessToken(token)
-    }
     return api.post('/verify/validate-token', { token })
   }
 }
@@ -111,7 +93,7 @@ export class VerifyUtils {
       canvas.toDataURL()
     ].join('|')
     
-    return btoa(fingerprint).substr(0, 32)
+    return btoa(fingerprint).substring(0, 32)
   }
 
   /**
@@ -120,8 +102,8 @@ export class VerifyUtils {
    */
   static generateChallengeId() {
     const timestamp = Date.now()
-    const random = Math.random().toString(36).substr(2, 9)
-    const fingerprint = this.generateFingerprint().substr(0, 8)
+    const random = Math.random().toString(36).substring(2, 11)
+    const fingerprint = this.generateFingerprint().substring(0, 8)
     return `${timestamp}_${random}_${fingerprint}`
   }
 
@@ -131,7 +113,7 @@ export class VerifyUtils {
    * @param {string} secret - 密钥（客户端不应该有真实密钥）
    * @returns {boolean} 验证结果
    */
-  static verifyTokenSignature(token, secret = 'client_verify') {
+  static verifyTokenSignature(token) {
     try {
       const decoded = atob(token)
       const parts = decoded.split(':')
@@ -160,9 +142,9 @@ export class VerifyUtils {
    */
   static generateSecureToken(challengeId, timestamp) {
     const fingerprint = this.generateFingerprint()
-    const random = Math.random().toString(36).substr(2, 9)
+    const random = Math.random().toString(36).substring(2, 11)
     const payload = `${challengeId}:${timestamp}:${fingerprint}:${random}`
-    
+
     // 简单的客户端签名（真实签名应该在服务端）
     const signature = btoa(payload + ':client_verify')
     return signature
@@ -231,7 +213,7 @@ export class VerifySession {
    * @returns {string} 会话ID
    */
   generateSessionId() {
-    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11)
   }
 
   /**

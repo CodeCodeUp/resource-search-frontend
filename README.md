@@ -26,15 +26,23 @@
 src/
 ├── api/                 # API 接口
 │   ├── index.js        # 主要 API 配置
-│   └── mock.js         # 模拟数据
+│   └── verify.js       # 验证相关 API
 ├── components/         # 组件
 │   ├── SearchBar.vue   # 搜索栏组件
 │   ├── ResourceCard.vue # 资源卡片组件
-│   └── ResourceList.vue # 资源列表组件
+│   ├── ResourceList.vue # 资源列表组件
+│   └── SlideVerify.vue # 滑动验证组件
 ├── stores/             # 状态管理
 │   └── resource.js     # 资源相关状态
 ├── utils/              # 工具函数
-│   └── message.js      # 消息提示工具
+│   ├── message.js      # 消息提示工具
+│   ├── highlight.js    # 文本高亮工具
+│   ├── image.js        # 图片处理工具
+│   └── url.js          # URL 处理工具
+├── config/             # 配置文件
+│   ├── card.js         # 卡片配置
+│   ├── image.js        # 图片配置
+│   └── security.js     # 安全配置
 ├── views/              # 页面
 │   └── Home.vue        # 主页
 ├── router/             # 路由配置
@@ -65,8 +73,17 @@ npm run build
 在 `.env.development` 文件中可以配置：
 
 ```env
-# 是否使用真实API（注释掉则使用模拟数据）
-# VITE_USE_REAL_API=true
+# API 基础地址
+VITE_APP_BASE_API=127.0.0.1:8080/api
+
+# 图片代理配置
+VITE_USE_IMAGE_PROXY=imageproxy
+
+# 图片适配模式
+VITE_IMAGE_FIT_MODE=smart
+
+# 卡片尺寸配置
+VITE_CARD_SIZE=compact
 ```
 
 ### API 接口

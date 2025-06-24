@@ -1,10 +1,5 @@
 import axios from 'axios'
 import { handleApiError } from '@/utils/message'
-import { mockApi } from './mock'
-
-// 开发模式标志
-const isDev = import.meta.env.DEV
-const useMock = isDev && !import.meta.env.VITE_USE_REAL_API
 
 // 创建axios实例
 const api = axios.create({
@@ -40,17 +35,11 @@ api.interceptors.response.use(
 export const resourceApi = {
   // 获取资源类型层级结构
   getMenusHierarchical() {
-    if (useMock) {
-      return mockApi.getMenusHierarchical()
-    }
     return api.get('/menus/hierarchical')
   },
 
   // 搜索资源（统一接口，支持空搜索词获取所有资源）
   searchResources(searchData) {
-    if (useMock) {
-      return mockApi.searchResources(searchData)
-    }
     return api.post('/resources/search', searchData)
   }
 }
