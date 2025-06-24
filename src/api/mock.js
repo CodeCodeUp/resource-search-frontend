@@ -186,3 +186,139 @@ export const mockApi = {
     })
   }
 }
+
+// 验证相关Mock API
+const mockVerifyApi = {
+  // 获取验证挑战
+  getChallenge(params = {}) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const challengeId = `challenge_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+
+        console.log('Mock API - 获取验证挑战 (请求头参数):', {
+          'X-Device-Fingerprint': params.deviceFingerprint,
+          'X-User-Agent': params.userAgent,
+          'X-Timestamp': params.timestamp
+        })
+
+        // 生成安全的拼图位置
+        const canvasWidth = 300
+        const canvasHeight = 150
+        const blockSize = 42
+        const puzzlePadding = 15
+
+        const minX = puzzlePadding
+        const maxX = canvasWidth - blockSize - puzzlePadding
+        const minY = puzzlePadding
+        const maxY = canvasHeight - blockSize - puzzlePadding
+
+        resolve({
+          success: true,
+          data: {
+            challengeId,
+            backgroundImage: '', // 实际应该是base64图片数据
+            puzzlePosition: {
+              x: Math.random() * (maxX - minX) + minX,
+              y: Math.random() * (maxY - minY) + minY
+            },
+            tolerance: 5,
+            expiresAt: Date.now() + 300000, // 5分钟后过期
+            serverSignature: 'mock_signature'
+          }
+        })
+      }, 500)
+    })
+  },
+
+  // 验证滑动结果
+  verifySlide(verifyData) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('Mock API - 验证滑动结果 (请求头参数):', {
+          'X-Device-Fingerprint': verifyData.deviceFingerprint,
+          'X-User-Agent': verifyData.userAgent,
+          'X-Timestamp': verifyData.timestamp
+        })
+        console.log('Mock API - 验证滑动结果 (请求体参数):', {
+          challengeId: verifyData.challengeId,
+          slidePosition: verifyData.slidePosition,
+          slideTime: verifyData.slideTime
+        })
+
+        // 模拟验证逻辑 - 基于滑动时间和位置的简单验证
+        const slideTime = verifyData.slideTime || 0
+        const isReasonableTime = slideTime > 200 && slideTime < 10000 // 200ms到10s之间
+        const hasValidData = verifyData.challengeId && verifyData.slidePosition !== undefined
+
+        const success = isReasonableTime && hasValidData && Math.random() > 0.1 // 90%成功率
+
+        if (success) {
+          resolve({
+            success: true,
+            data: {
+              verified: true,
+              accessToken: `access_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+              expiresAt: Date.now() + 1800000, // 30分钟后过期
+              sessionId: `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+            }
+          })
+        } else {
+          resolve({
+            success: false,
+            message: '验证失败，请重试'
+          })
+        }
+      }, 1000)
+    })
+  },
+
+  // 获取资源访问令牌
+  getAccessToken(accessData) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('Mock API - 获取资源访问令牌:', {
+          resourceId: accessData.resourceId,
+          verifyToken: accessData.verifyToken
+        })
+
+        resolve({
+          success: true,
+          data: {
+            accessToken: `resource_access_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            resourceUrl: `https://example.com/resource/${accessData.resourceId}`,
+            expiresAt: Date.now() + 1800000
+          }
+        })
+      }, 300)
+    })
+  },
+
+  // 验证访问令牌
+  validateAccessToken(token) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('Mock API - 验证访问令牌:', { token })
+
+        // 从token中提取资源ID（模拟）
+        const resourceId = token.includes('resource_access') ?
+          `resource_${Math.floor(Math.random() * 1000)}` : 'mock_resource_id'
+
+        resolve({
+          success: true,
+          data: {
+            valid: true,
+            resourceData: {
+              id: resourceId,
+              name: 'Mock Resource',
+              url: `https://example.com/actual-resource/${resourceId}?token=${token}`,
+              type: 'study'
+            }
+          }
+        })
+      }, 200)
+    })
+  }
+}
+
+export { mockVerifyApi }
+export default mockApi

@@ -24,4 +24,5 @@ app.mount('#app')
 // 开发环境下加载测试工具
 if (import.meta.env.DEV) {
   import('./utils/test.js')
+  import('./utils/verify-test.js')
 }

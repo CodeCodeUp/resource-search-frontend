@@ -52,7 +52,7 @@
         
         <div class="search-actions">
           <el-button
-            text
+            link
             type="info"
             @click="handleReset"
           >

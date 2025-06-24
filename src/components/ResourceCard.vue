@@ -38,9 +38,9 @@
         </div>
         
         <div class="card-actions">
-          <el-button 
-            text 
-            type="primary" 
+          <el-button
+            link
+            type="primary"
             size="small"
             @click.stop="handleView"
           >
@@ -48,9 +48,9 @@
             查看
           </el-button>
           
-          <!-- <el-button 
-            text 
-            type="success" 
+          <!-- <el-button
+            link
+            type="success"
             size="small"
             @click.stop="handleDownload"
             v-if="resource.url"
@@ -62,6 +62,13 @@
       </div>
     </div>
   </div>
+
+  <!-- 滑动验证组件 -->
+  <SlideVerify
+    v-model:visible="verifyVisible"
+    @success="handleVerifySuccess"
+    @cancel="handleVerifyCancel"
+  />
 
   <!-- 精美的资源详情弹窗 -->
   <el-dialog
@@ -109,17 +116,18 @@
         <div class="url-container">
           <div class="url-display">
             <el-input
-              v-model="resource.url"
+              v-model="resourceUrl"
               readonly
-              placeholder="暂无链接"
+              placeholder="验证后可获取资源链接"
               class="url-input"
+              :loading="isLoadingUrl"
             >
               <template #suffix>
                 <el-button
                   type="primary"
                   size="small"
                   @click="copyUrl"
-                  :disabled="!resource.url"
+                  :disabled="!resourceUrl"
                   class="copy-btn"
                 >
                   <el-icon>
@@ -160,7 +168,7 @@
         <el-button
           type="primary"
           @click="openUrl"
-          :disabled="!resource.url"
+          :disabled="!resourceUrl"
         >
           <el-icon><TopRight /></el-icon>
           打开链接
@@ -179,6 +187,9 @@ import { storeToRefs } from 'pinia'
 import { highlightText } from '@/utils/highlight'
 import { processImageUrl, generateDefaultImage } from '@/utils/image'
 import { getImageFitMode, getImageInfo, imageConfig } from '@/config/image'
+import SlideVerify from './SlideVerify.vue'
+import { verifyApi, globalVerifySession, VerifyUtils } from '@/api/verify'
+import { ElMessage } from 'element-plus'
 
 const props = defineProps({
   resource: {
@@ -200,6 +211,13 @@ const useAutoFit = ref(false)
 // 弹窗状态
 const dialogVisible = ref(false)
 const copySuccess = ref(false)
+
+// 验证状态
+const verifyVisible = ref(false)
+const isVerifying = ref(false)
+const verifyToken = ref('')
+const resourceUrl = ref('')
+const isLoadingUrl = ref(false)
 
 // 高亮显示的文本
 const highlightedName = computed(() => {
@@ -298,16 +316,58 @@ const handleCardClick = () => {
 }
 
 const handleView = () => {
+  // 检查是否已经验证过该资源
+  const resourceId = props.resource.id || props.resource._id
+
+  if (globalVerifySession.isResourceVerified(resourceId)) {
+    // 已验证，直接显示详情
+    showResourceDetails()
+  } else {
+    // 未验证，显示滑动验证
+    verifyVisible.value = true
+  }
+}
+
+const showResourceDetails = async () => {
   dialogVisible.value = true
   copySuccess.value = false
+
+  // 如果还没有资源URL，尝试获取
+  if (!resourceUrl.value && verifyToken.value) {
+    await loadResourceUrl()
+  }
+}
+
+// 加载资源URL
+const loadResourceUrl = async () => {
+  try {
+    isLoadingUrl.value = true
+    const resourceId = props.resource.id || props.resource._id
+
+    // 使用已有的验证令牌验证并获取资源URL
+    const validateResult = await verifyApi.validateAccessToken(verifyToken.value)
+
+    if (validateResult.success && validateResult.data.valid) {
+      resourceUrl.value = validateResult.data.resourceData?.url
+    } else {
+      // 如果令牌无效，需要重新验证
+      ElMessage.warning('访问令牌已过期，请重新验证')
+      globalVerifySession.markResourceVerified(resourceId, false) // 标记为未验证
+    }
+  } catch (error) {
+    console.error('获取资源URL失败:', error)
+    ElMessage.error('获取资源链接失败')
+  } finally {
+    isLoadingUrl.value = false
+  }
 }
 
 // 复制URL到剪贴板
 const copyUrl = async () => {
-  if (!props.resource.url) return
+  if (!resourceUrl.value) return
 
   try {
-    await navigator.clipboard.writeText(props.resource.url)
+    await navigator.clipboard.writeText(resourceUrl.value)
     copySuccess.value = true
 
     // 2秒后重置状态
@@ -317,7 +377,7 @@ const copyUrl = async () => {
   } catch (error) {
     console.error('复制失败:', error)
     // 降级方案：使用传统方法复制
-    fallbackCopy(props.resource.url)
+    fallbackCopy(resourceUrl.value)
   }
 }
 
@@ -343,9 +403,64 @@ const fallbackCopy = (text) => {
 
 // 打开URL
 const openUrl = () => {
-  if (props.resource.url) {
-    window.open(props.resource.url, '_blank')
+  if (resourceUrl.value) {
+    window.open(resourceUrl.value, '_blank')
   }
+}
+
+// 验证成功处理
+const handleVerifySuccess = async (verifyData) => {
+  try {
+    isVerifying.value = true
+    const resourceId = props.resource.id || props.resource._id
+
+    // 1. 验证滑动结果并获取访问令牌
+    const verifyResult = await verifyApi.verifySlide({
+      ...verifyData,
+      resourceId: resourceId
+    })
+
+    if (verifyResult.success && verifyResult.data.verified) {
+      // 2. 使用访问令牌获取资源URL
+      const accessResult = await verifyApi.getAccessToken({
+        resourceId: resourceId,
+        verifyToken: verifyResult.data.accessToken
+      })
+
+      if (accessResult.success) {
+        // 3. 验证访问令牌并获取最终资源URL
+        const validateResult = await verifyApi.validateAccessToken(accessResult.data.accessToken)
+
+        if (validateResult.success && validateResult.data.valid) {
+          // 标记资源已验证
+          globalVerifySession.markResourceVerified(resourceId)
+          verifyToken.value = accessResult.data.accessToken
+          resourceUrl.value = validateResult.data.resourceData?.url || accessResult.data.resourceUrl
+
+          // 显示资源详情
+          showResourceDetails()
+
+          ElMessage.success('验证成功！')
+        } else {
+          ElMessage.error('资源访问验证失败')
+        }
+      } else {
+        ElMessage.error('获取资源访问权限失败')
+      }
+    } else {
+      ElMessage.error('验证失败，请重试')
+    }
+  } catch (error) {
+    console.error('验证失败:', error)
+    ElMessage.error('验证失败，请重试')
+  } finally {
+    isVerifying.value = false
+  }
+}
+
+// 验证取消处理
+const handleVerifyCancel = () => {
+  verifyVisible.value = false
 }
 
 // 关闭弹窗
