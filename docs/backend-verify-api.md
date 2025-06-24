@@ -139,12 +139,20 @@
 
 **接口地址：** `POST /api/verify/access-token`
 
-**请求参数：**
+**请求头：** (Request Headers)
+```javascript
+{
+  "X-Device-Fingerprint": "abc123def456",     // 设备指纹 (可选)
+  "X-User-Agent": "Mozilla/5.0...",           // 用户代理 (可选)
+  "X-Timestamp": "1703123456789"              // 请求时间戳 (可选)
+}
+```
+
+**请求参数：** (Request Body)
 ```json
 {
   "resourceId": "string",        // 资源ID
-  "verifyToken": "string",       // 验证令牌
-  "sessionId": "string"          // 会话ID
+  "verifyToken": "string"        // 验证令牌
 }
 ```
 
