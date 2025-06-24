@@ -105,6 +105,7 @@ const sliderButton = ref(null)
 
 // 验证状态
 const isVerified = ref(false)
+const isVerifying = ref(false)
 const verifyStatus = ref('')
 const statusMessage = ref('')
 const statusType = ref('info')
@@ -228,6 +229,7 @@ const validatePuzzlePosition = (x, y) => {
 // 重置验证状态
 const resetVerifyState = () => {
   isVerified.value = false
+  isVerifying.value = false
   verifyStatus.value = ''
   sliderPosition.value = 0
   sliderProgress.value = 0
@@ -409,14 +411,18 @@ const createPuzzlePath = (x, y, size) => {
 
 // 滑块事件处理
 const handleSliderStart = (e) => {
-  if (isVerified.value) return
+  if (isVerified.value || isVerifying.value) return
+
+  // 防止在触摸设备上同时触发鼠标和触摸事件
+  e.preventDefault()
 
   isDragging.value = true
   verifyStatus.value = ''
   verifyStartTime.value = Date.now()
-  
+
   const startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX
   const startPosition = sliderPosition.value
+  const eventType = e.type === 'mousedown' ? 'mouse' : 'touch'
   
   const handleMove = (e) => {
     if (!isDragging.value) return
@@ -442,70 +448,53 @@ const handleSliderStart = (e) => {
   
   const handleEnd = () => {
     if (!isDragging.value) return
-    
+
     isDragging.value = false
     checkVerifyResult()
-    
-    document.removeEventListener('mousemove', handleMove)
-    document.removeEventListener('mouseup', handleEnd)
-    document.removeEventListener('touchmove', handleMove)
-    document.removeEventListener('touchend', handleEnd)
+
+    // 根据事件类型移除对应的监听器
+    if (eventType === 'mouse') {
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleEnd)
+    } else {
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+    }
   }
-  
-  document.addEventListener('mousemove', handleMove)
-  document.addEventListener('mouseup', handleEnd)
-  document.addEventListener('touchmove', handleMove)
-  document.addEventListener('touchend', handleEnd)
+
+  // 根据事件类型添加对应的监听器
+  if (eventType === 'mouse') {
+    document.addEventListener('mousemove', handleMove)
+    document.addEventListener('mouseup', handleEnd)
+  } else {
+    document.addEventListener('touchmove', handleMove)
+    document.addEventListener('touchend', handleEnd)
+  }
 }
 
 // 检查验证结果
 const checkVerifyResult = async () => {
+  // 防止重复调用
+  if (isVerifying.value || isVerified.value) {
+    console.log('SlideVerify - 验证已在进行中或已完成，跳过重复调用')
+    return
+  }
+
   const distance = Math.abs(sliderPosition.value - correctPosition.value)
 
   if (distance <= tolerance) {
-    try {
-      // 前端验证通过，调用后端验证
-      const verifyResult = await verifyApi.verifySlide({
-        challengeId: challengeId.value,
-        token: generateVerifyToken(),
-        timestamp: Date.now(),
-        slidePosition: sliderPosition.value,
-        slideTime: Date.now() - (verifyStartTime.value || Date.now()),
-        deviceFingerprint: await generateDeviceFingerprint(),
-        userAgent: navigator.userAgent
-      })
+    // 前端滑动验证通过，直接触发成功事件
+    // 让父组件(ResourceCard)来处理后端验证
+    isVerified.value = true
+    showStatus('验证成功！', 'success')
+    sliderText.value = '验证成功'
 
-      if (verifyResult.success && verifyResult.data.verified) {
-        // 后端验证成功
-        isVerified.value = true
-        verifyToken.value = verifyResult.data.accessToken || generateVerifyToken()
-        showStatus('验证成功！', 'success')
-        sliderText.value = '验证成功'
+    console.log('SlideVerify - 前端验证通过，触发成功事件')
 
-        // 自动触发成功回调，延迟一点时间让用户看到成功状态
-        setTimeout(() => {
-          handleVerifySuccess()
-        }, 1000)
-      } else {
-        // 后端验证失败
-        showStatus('验证失败，请重试', 'error')
-        setTimeout(() => {
-          resetSlider()
-        }, 1000)
-      }
-    } catch (error) {
-      console.error('后端验证失败:', error)
-      // 降级到前端验证
-      isVerified.value = true
-      verifyToken.value = generateVerifyToken()
-      showStatus('验证成功！', 'success')
-      sliderText.value = '验证成功'
-
-      // 自动触发成功回调
-      setTimeout(() => {
-        handleVerifySuccess()
-      }, 1000)
-    }
+    // 延迟一点时间让用户看到成功状态，然后触发成功回调
+    setTimeout(() => {
+      handleVerifySuccess()
+    }, 1000)
   } else {
     // 验证失败
     showStatus('验证失败，请重试', 'error')
@@ -550,6 +539,7 @@ const resetSlider = () => {
   blockLeft.value = 0
   sliderText.value = '向右滑动完成验证'
   verifyStatus.value = ''
+  isVerifying.value = false
 }
 
 // 显示状态
@@ -565,11 +555,16 @@ const handleRefresh = () => {
 }
 
 // 处理验证成功
-const handleVerifySuccess = () => {
+const handleVerifySuccess = async () => {
+  // 传递滑动验证数据给父组件，让父组件处理后端验证
   emit('success', {
-    token: verifyToken.value,
     challengeId: challengeId.value,
-    timestamp: Date.now()
+    token: generateVerifyToken(),
+    timestamp: Date.now(),
+    slidePosition: sliderPosition.value,
+    slideTime: Date.now() - (verifyStartTime.value || Date.now()),
+    deviceFingerprint: await generateDeviceFingerprint(),
+    userAgent: navigator.userAgent
   })
   emit('update:visible', false)
 }

@@ -278,14 +278,24 @@ const mockVerifyApi = {
       setTimeout(() => {
         console.log('Mock API - 获取资源访问令牌:', {
           resourceId: accessData.resourceId,
-          verifyToken: accessData.verifyToken
+          verifyToken: accessData.verifyToken,
+          sessionId: accessData.sessionId
         })
+
+        // 验证必需参数
+        if (!accessData.sessionId) {
+          resolve({
+            success: false,
+            message: '缺少会话ID参数'
+          })
+          return
+        }
 
         resolve({
           success: true,
           data: {
             accessToken: `resource_access_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-            resourceUrl: `https://example.com/resource/${accessData.resourceId}`,
+            resourceUrl: `https://example.com/resource/${accessData.resourceId}?session=${accessData.sessionId}`,
             expiresAt: Date.now() + 1800000
           }
         })

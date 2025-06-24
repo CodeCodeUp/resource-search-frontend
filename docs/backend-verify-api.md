@@ -152,7 +152,8 @@
 ```json
 {
   "resourceId": "string",        // 资源ID
-  "verifyToken": "string"        // 验证令牌
+  "verifyToken": "string",       // 验证令牌
+  "sessionId": "string"          // 会话ID (从verify/slide接口获取)
 }
 ```
 
@@ -162,7 +163,6 @@
   "success": true,
   "data": {
     "accessToken": "encrypted_access_token",
-    "resourceUrl": "string",
     "expiresAt": 1703125456789
   }
 }
@@ -176,8 +176,6 @@
 ```json
 {
   "token": "string",             // 访问令牌
-  "resourceId": "string",        // 资源ID
-  "action": "string"             // 操作类型：view/download
 }
 ```
 

@@ -414,17 +414,22 @@ const handleVerifySuccess = async (verifyData) => {
     isVerifying.value = true
     const resourceId = props.resource.id || props.resource._id
 
-    // 1. 验证滑动结果并获取访问令牌
+    console.log('ResourceCard - 接收到滑动验证数据:', verifyData)
+
+    // 1. 调用后端验证滑动结果
     const verifyResult = await verifyApi.verifySlide({
       ...verifyData,
       resourceId: resourceId
     })
 
     if (verifyResult.success && verifyResult.data.verified) {
-      // 2. 使用访问令牌获取资源URL
+      console.log('ResourceCard - 后端验证成功:', verifyResult.data)
+
+      // 2. 使用验证令牌和会话ID获取资源URL
       const accessResult = await verifyApi.getAccessToken({
         resourceId: resourceId,
-        verifyToken: verifyResult.data.accessToken
+        verifyToken: verifyResult.data.accessToken,
+        sessionId: verifyResult.data.sessionId
       })
 
       if (accessResult.success) {
@@ -448,7 +453,7 @@ const handleVerifySuccess = async (verifyData) => {
         ElMessage.error('获取资源访问权限失败')
       }
     } else {
-      ElMessage.error('验证失败，请重试')
+      ElMessage.error('滑动验证失败，请重试')
     }
   } catch (error) {
     console.error('验证失败:', error)

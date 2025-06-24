@@ -65,6 +65,7 @@ export const verifyApi = {
    * @param {Object} accessData - 访问数据
    * @param {string} accessData.resourceId - 资源ID
    * @param {string} accessData.verifyToken - 验证令牌
+   * @param {string} accessData.sessionId - 会话ID
    * @returns {Promise} 访问令牌
    */
   getAccessToken(accessData) {
