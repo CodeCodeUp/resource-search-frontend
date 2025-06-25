@@ -15,17 +15,16 @@
       <div class="container">
         <div class="footer-content">
           <div class="footer-info">
-            <h4>资源搜索平台</h4>
-            <p>发现优质资源，助力学习成长</p>
+            <h4>精盘搜</h4>
           </div>
           <div class="footer-links">
-            <a href="#" @click.prevent>关于我们</a>
-            <a href="#" @click.prevent>联系方式</a>
-            <a href="#" @click.prevent>使用帮助</a>
+            <router-link to="/user-agreement">用户协议</router-link>
+            <router-link to="/disclaimer">免责声明</router-link>
+            <router-link to="/copyright">版权说明</router-link>
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2024 资源搜索平台. All rights reserved.</p>
+          <p>&copy; 2025 精盘搜. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -91,66 +90,83 @@ watch(
 }
 
 .footer {
-  background: #2c3e50;
-  color: white;
-  padding: 40px 0 20px;
+  background: white;
+  color: #666;
+  padding: 30px 0 15px;
   margin-top: auto;
+  border-top: 1px solid #e9ecef;
+}
+
+.footer .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .footer-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .footer-info h4 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: #ecf0f1;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #555;
 }
 
 .footer-info p {
-  color: #bdc3c7;
-  font-size: 0.9rem;
+  color: #888;
+  font-size: 0.85rem;
 }
 
 .footer-links {
   display: flex;
-  gap: 30px;
+  gap: 20px;
 }
 
-.footer-links a {
-  color: #bdc3c7;
+.footer-links a,
+.footer-links .router-link-active,
+.footer-links .router-link-exact-active {
+  color: #888;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: color 0.3s ease;
 }
 
-.footer-links a:hover {
+.footer-links a:hover,
+.footer-links .router-link-active:hover,
+.footer-links .router-link-exact-active:hover {
   color: #3498db;
 }
 
 .footer-bottom {
   text-align: center;
-  padding-top: 20px;
-  border-top: 1px solid #34495e;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
 }
 
 .footer-bottom p {
-  color: #95a5a6;
-  font-size: 0.85rem;
+  color: #999;
+  font-size: 0.8rem;
   margin: 0;
 }
 
 @media (max-width: 768px) {
+  .footer .container {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+
   .footer-content {
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
   }
-  
+
   .footer-links {
-    gap: 20px;
+    gap: 15px;
+    flex-wrap: wrap;
   }
 }
 </style>

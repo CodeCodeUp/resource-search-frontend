@@ -136,7 +136,7 @@ const handleReset = () => {
 
 <style scoped>
 .search-bar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1973bd 0%, #85c0f1 100%);
   padding: 60px 0;
   position: relative;
   overflow: hidden;
