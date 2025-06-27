@@ -70,6 +70,42 @@
     @cancel="handleVerifyCancel"
   />
 
+  <!-- 验证加载状态弹窗 -->
+  <el-dialog
+    v-model="isVerifying"
+    title="正在验证"
+    width="400px"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    :show-close="false"
+    align-center
+    class="verify-loading-dialog"
+  >
+    <div class="verify-loading-content">
+      <div class="loading-animation">
+        <el-icon class="rotating" size="48" color="#409EFF">
+          <Loading />
+        </el-icon>
+      </div>
+      <h3>正在验证资源访问权限</h3>
+      <p>请稍候，正在为您获取资源链接...</p>
+      <div class="loading-steps">
+        <div class="step" :class="{ active: verifyStep >= 1, completed: verifyStep > 1 }">
+          <el-icon><Check v-if="verifyStep > 1" /><Loading v-else-if="verifyStep === 1" class="rotating" /></el-icon>
+          <span>验证滑块结果</span>
+        </div>
+        <div class="step" :class="{ active: verifyStep >= 2, completed: verifyStep > 2 }">
+          <el-icon><Check v-if="verifyStep > 2" /><Loading v-else-if="verifyStep === 2" class="rotating" /></el-icon>
+          <span>获取访问令牌</span>
+        </div>
+        <div class="step" :class="{ active: verifyStep >= 3, completed: verifyStep > 3 }">
+          <el-icon><Check v-if="verifyStep > 3" /><Loading v-else-if="verifyStep === 3" class="rotating" /></el-icon>
+          <span>获取资源链接</span>
+        </div>
+      </div>
+    </div>
+  </el-dialog>
+
   <!-- 精美的资源详情弹窗 -->
   <el-dialog
     v-model="dialogVisible"
@@ -181,7 +217,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { View, Link, DocumentCopy, Check, TopRight } from '@element-plus/icons-vue'
+import { View, Link, DocumentCopy, Check, TopRight, Loading } from '@element-plus/icons-vue'
 import { useResourceStore } from '@/stores/resource'
 import { storeToRefs } from 'pinia'
 import { highlightText } from '@/utils/highlight'
@@ -215,6 +251,7 @@ const copySuccess = ref(false)
 // 验证状态
 const verifyVisible = ref(false)
 const isVerifying = ref(false)
+const verifyStep = ref(0) // 验证步骤：0-未开始，1-验证滑块，2-获取令牌，3-获取链接，4-完成
 const verifyToken = ref('')
 const resourceUrl = ref('')
 const isLoadingUrl = ref(false)
@@ -412,6 +449,7 @@ const openUrl = () => {
 const handleVerifySuccess = async (verifyData) => {
   try {
     isVerifying.value = true
+    verifyStep.value = 1 // 开始验证滑块结果
     const resourceId = props.resource.id || props.resource._id
 
     console.log('ResourceCard - 接收到滑动验证数据:', verifyData)
@@ -424,6 +462,7 @@ const handleVerifySuccess = async (verifyData) => {
 
     if (verifyResult.success && verifyResult.data.verified) {
       console.log('ResourceCard - 后端验证成功:', verifyResult.data)
+      verifyStep.value = 2 // 开始获取访问令牌
 
       // 2. 使用验证令牌和会话ID获取资源URL
       const accessResult = await verifyApi.getAccessToken({
@@ -433,19 +472,24 @@ const handleVerifySuccess = async (verifyData) => {
       })
 
       if (accessResult.success) {
+        verifyStep.value = 3 // 开始获取资源链接
+
         // 3. 验证访问令牌并获取最终资源URL
         const validateResult = await verifyApi.validateAccessToken(accessResult.data.accessToken)
 
         if (validateResult.success && validateResult.data.valid) {
+          verifyStep.value = 4 // 验证完成
+
           // 标记资源已验证
           globalVerifySession.markResourceVerified(resourceId)
           verifyToken.value = accessResult.data.accessToken
           resourceUrl.value = validateResult.data.resourceData?.url || accessResult.data.resourceUrl
 
-          // 显示资源详情
-          showResourceDetails()
-
-          ElMessage.success('验证成功！')
+          // 短暂延迟后显示资源详情，让用户看到完成状态
+          setTimeout(() => {
+            showResourceDetails()
+            ElMessage.success('验证成功！')
+          }, 800)
         } else {
           ElMessage.error('资源访问验证失败')
         }
@@ -459,7 +503,11 @@ const handleVerifySuccess = async (verifyData) => {
     console.error('验证失败:', error)
     ElMessage.error('验证失败，请重试')
   } finally {
-    isVerifying.value = false
+    // 延迟关闭加载状态，确保用户能看到完成状态
+    setTimeout(() => {
+      isVerifying.value = false
+      verifyStep.value = 0
+    }, verifyStep.value === 4 ? 1000 : 500)
   }
 }
 
@@ -842,5 +890,112 @@ const formatTime = (timeStr) => {
   .dialog-footer .el-button {
     width: 100%;
   }
+}
+
+/* 验证加载弹窗样式 */
+:deep(.verify-loading-dialog) {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+:deep(.verify-loading-dialog .el-dialog__header) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 24px;
+  margin: 0;
+}
+
+:deep(.verify-loading-dialog .el-dialog__title) {
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+:deep(.verify-loading-dialog .el-dialog__body) {
+  padding: 32px 24px;
+}
+
+.verify-loading-content {
+  text-align: center;
+}
+
+.loading-animation {
+  margin-bottom: 24px;
+}
+
+.rotating {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.verify-loading-content h3 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.verify-loading-content p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0 0 32px 0;
+}
+
+.loading-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #1976d2;
+}
+
+.step.completed {
+  background: #e8f5e8;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.step .el-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.step.active .el-icon {
+  color: #2196f3;
+}
+
+.step.completed .el-icon {
+  color: #4caf50;
+}
+
+.step span {
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 </style>

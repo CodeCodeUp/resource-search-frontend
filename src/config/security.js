@@ -45,7 +45,7 @@ export const securityConfig = {
     enableEncryption: false,
     
     // 请求超时（毫秒）
-    timeout: 10000,
+    timeout: 60000,
     
     // 重试次数
     retryCount: 2,
